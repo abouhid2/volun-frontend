@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Button, Box, IconButton, Paper, Popover } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Container, Typography, Button, Box, IconButton } from "@mui/material";
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { Event, Entity } from "../types";
 import { EventForm } from "./EventForm";
+import { CalendarDayCell } from "./CalendarDayCell";
+import { EventPopover } from "./EventPopover";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { API_CONFIG } from '../config/api';
@@ -12,6 +14,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { format, isSameDay, parseISO, isSameMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { eventListStyles } from '../styles/eventList.styles';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
@@ -28,7 +31,6 @@ export const EventList = () => {
     searchParams.get('date') ? new Date(searchParams.get('date')!) : new Date()
   );
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [hoveredEvents, setHoveredEvents] = useState<Event[]>([]);
   const navigate = useNavigate();
 
   const fetchEvents = async () => {
@@ -94,9 +96,7 @@ export const EventList = () => {
 
   const handleDayClick = (date: Date) => {
     const dayEvents = getEventsForDate(date);
-    if (dayEvents.length > 0) {
-      setHoveredEvents(dayEvents);
-    } else {
+    if (dayEvents.length === 0) {
       setSelectedDate(date);
       setIsFormOpen(true);
       setSelectedEvent(undefined);
@@ -135,8 +135,8 @@ export const EventList = () => {
   if (!entity) return null;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+    <Container maxWidth="lg" sx={eventListStyles.container}>
+      <Box sx={eventListStyles.header}>
         <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
@@ -145,194 +145,44 @@ export const EventList = () => {
         </Typography>
         <Button 
           variant="contained" 
-          sx={{ 
-            ml: 'auto',
-            bgcolor: '#1a73e8',
-            '&:hover': {
-              bgcolor: '#1557b0'
-            }
-          }} 
+          sx={eventListStyles.createButton}
           onClick={() => setIsFormOpen(true)}
         >
           CREATE EVENT
         </Button>
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 4 }}>
+      <Box sx={eventListStyles.calendarContainer}>
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
-          <Box sx={{ 
-            flex: 1,
-            bgcolor: 'background.paper',
-            borderRadius: 1,
-            boxShadow: 1,
-            overflow: 'hidden',
-            height: '100vh'
-          }}>
+          <Box sx={eventListStyles.calendarWrapper}>
             <DateCalendar 
               value={selectedDate}
               onChange={handleDateChange}
-              sx={{
-                width: '100%',
-                height: '100%',
-                '& .MuiDayCalendar-weekContainer': {
-                  margin: 0,
-                  minHeight: '120px',
-                },
-                '& .MuiPickersDay-root': {
-                  height: '120px',
-                  width: '100%',
-                  borderRadius: 0,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  margin: 0,
-                  '&:hover': {
-                    backgroundColor: 'action.hover',
-                  },
-                  '&.Mui-selected': {
-                    backgroundColor: 'transparent',
-                    color: 'text.primary',
-                  }
-                },
-                '& .MuiDayCalendar-weekDayLabel': {
-                  textTransform: 'uppercase',
-                  fontWeight: 500,
-                  width: '100%',
-                  fontSize: '0.75rem',
-                  textAlign: 'left',
-                  pl: 1
-                },
-                '& .MuiPickersDay-dayOutsideMonth': {
-                  opacity: 0.5,
-                  pointerEvents: 'none',
-                  backgroundColor: '#f5f5f5',
-                }
-              }}
+              sx={eventListStyles.calendar}
               dayOfWeekFormatter={(day) => WEEKDAY_LABELS[day.getDay()]}
               slots={{
-                day: (props) => {
-                  const dayEvents = getEventsForDate(props.day);
-                  const isToday = isSameDay(props.day, new Date());
-                  const isCurrentMonth = isSameMonth(props.day, selectedDate || new Date());
-
-                  return (
-                    <Box
-                      onClick={() => isCurrentMonth && handleDayClick(props.day)}
-                      sx={{
-                        height: '100%',
-                        width: '100%',
-                        p: 1,
-                        cursor: isCurrentMonth ? 'pointer' : 'default',
-                        position: 'relative',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        bgcolor: isToday ? '#e8f0fe' : 'transparent',
-                        opacity: isCurrentMonth ? 1 : 0.5,
-                        '&:hover': {
-                          bgcolor: isCurrentMonth ? '#f8f9fa' : 'transparent'
-                        }
-                      }}
-                    >
-                      <Typography 
-                        sx={{ 
-                          fontSize: '1rem', 
-                          mb: 0.5,
-                          color: isToday ? '#1a73e8' : 'inherit',
-                          fontWeight: isToday ? 500 : 400,
-                          textAlign: 'left'
-                        }}
-                      >
-                        {format(props.day, 'dd')}
-                      </Typography>
-                      <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                        {dayEvents.map((event, index) => (
-                          <Box
-                            key={event.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEventClick(event, e.currentTarget as HTMLElement);
-                            }}
-                            sx={{
-                              backgroundColor: '#1a73e8',
-                              color: '#ffffff',
-                              p: 0.5,
-                              borderRadius: '4px',
-                              mb: 0.5,
-                              fontSize: '0.75rem',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              cursor: 'pointer',
-                              '&:hover': {
-                                backgroundColor: '#1557b0',
-                              },
-                            }}
-                          >
-                            {event.title}
-                          </Box>
-                        ))}
-                      </Box>
-                    </Box>
-                  );
-                }
+                day: (props) => (
+                  <CalendarDayCell
+                    day={props.day}
+                    events={getEventsForDate(props.day)}
+                    selectedDate={selectedDate}
+                    onDayClick={handleDayClick}
+                    onEventClick={handleEventClick}
+                  />
+                )
               }}
             />
           </Box>
         </LocalizationProvider>
       </Box>
 
-      <Popover
-        open={Boolean(anchorEl)}
+      <EventPopover
+        event={selectedEvent}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        {selectedEvent && (
-          <Box sx={{ p: 2, maxWidth: 400 }}>
-            <Typography variant="h6" gutterBottom>
-              {selectedEvent.title}
-            </Typography>
-            <Typography variant="body2" gutterBottom>
-              {format(parseISO(selectedEvent.date), 'dd/MM/yyyy')}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              {selectedEvent.description}
-            </Typography>
-            <Typography variant="body2" gutterBottom>
-              Location: {selectedEvent.location}
-            </Typography>
-            <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-              <Button
-                size="small"
-                startIcon={<EditIcon />}
-                onClick={() => {
-                  handleEdit(selectedEvent);
-                  handlePopoverClose();
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                size="small"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => {
-                  handleDelete(selectedEvent.id);
-                  handlePopoverClose();
-                }}
-              >
-                Delete
-              </Button>
-            </Box>
-          </Box>
-        )}
-      </Popover>
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       <EventForm
         open={isFormOpen}
