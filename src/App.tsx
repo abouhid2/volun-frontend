@@ -6,6 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { EventList } from './components/EventList';
+import { EntityList } from './components/EntityList';
 import { Layout } from './components/Layout';
 
 const theme = createTheme();
@@ -19,7 +20,8 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/" element={<EventList />} />
+              <Route path="/" element={<EntityList />} />
+              <Route path="/events/:entityId" element={<EventList />} />
             </Routes>
           </Layout>
         </Router>
