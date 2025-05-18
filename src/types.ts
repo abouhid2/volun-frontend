@@ -5,10 +5,15 @@ export interface Event {
   date: string;
   participants_count: number;
   is_participating: boolean;
+  participants?: Participant[];
 }
 
 export interface Participant {
   id: number;
-  event_id: number;
-  user_id: number;
+  name: string;
+  user_id?: number;
+}
+
+export interface ParticipationRequest {
+  name: string;
 } 
