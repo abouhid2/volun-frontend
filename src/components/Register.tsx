@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthService, RegisterData } from '../services/auth.service';
 import { Box, Button, TextField, Typography, Container } from '@mui/material';
+import { useLanguage } from '../context/LanguageContext';
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { translations } = useLanguage();
   const [formData, setFormData] = useState<RegisterData>({
     name: '',
     email: '',
@@ -28,7 +30,7 @@ export const Register = () => {
       await AuthService.register(formData);
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.errors?.[0] || 'An error occurred during registration');
+      setError(err.response?.data?.errors?.[0] || translations.auth.registerError);
     }
   };
 
@@ -43,7 +45,7 @@ export const Register = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Sign up
+          {translations.auth.registerTitle}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -51,7 +53,7 @@ export const Register = () => {
             required
             fullWidth
             id="name"
-            label="Full Name"
+            label={translations.auth.fullName}
             name="name"
             autoComplete="name"
             autoFocus
@@ -63,7 +65,7 @@ export const Register = () => {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label={translations.auth.email}
             name="email"
             autoComplete="email"
             value={formData.email}
@@ -74,7 +76,7 @@ export const Register = () => {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={translations.auth.password}
             type="password"
             id="password"
             autoComplete="new-password"
@@ -92,14 +94,14 @@ export const Register = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign Up
+            {translations.auth.registerButton}
           </Button>
           <Button
             fullWidth
             variant="text"
             onClick={() => navigate('/login')}
           >
-            Already have an account? Sign In
+            {translations.auth.hasAccount} {translations.auth.signIn}
           </Button>
         </Box>
       </Box>

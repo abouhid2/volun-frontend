@@ -31,7 +31,7 @@ export const AuthService = {
   },
 
   async login(data: LoginData): Promise<AuthResponse> {
-    const response = await axiosInstance.post('/auth/login', data);
+    const response = await axiosInstance.post('/auth/login', { auth: data });
     if (response.data.token) {
       localStorage.setItem('token', `Bearer ${response.data.token}`);
       localStorage.setItem('user', JSON.stringify(response.data.user));

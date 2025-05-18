@@ -12,11 +12,14 @@ import { deleteEvent } from '../services/api';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { format, isSameDay, parseISO, isSameMonth } from 'date-fns';
+import { format, isSameDay, parseISO, isSameMonth, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { eventListStyles } from '../styles/eventList.styles';
-
-const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+import { useAuthCheck } from '../hooks/useAuthCheck';
+import { LoadingState } from './common/LoadingState';
+import { ErrorState } from './common/ErrorState';
+import { AuthRequiredAlert } from './common/AuthRequiredAlert';
+import { translations } from '../translations/pt';
 
 export const EventList = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -30,8 +33,10 @@ export const EventList = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(
     searchParams.get('date') ? new Date(searchParams.get('date')!) : new Date()
   );
+  const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(new Date()));
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
 
   const fetchEvents = async () => {
     try {
@@ -45,7 +50,7 @@ export const EventList = () => {
       setEntity(entityResponse.data);
     } catch (error: any) {
       console.error("Error fetching events:", error);
-      setError(error.response?.data?.error || "Failed to load events. Please try again later.");
+      setError(error.response?.data?.error || translations.events.loadError);
     } finally {
       setLoading(false);
     }
@@ -59,26 +64,32 @@ export const EventList = () => {
 
   useEffect(() => {
     if (searchParams.get('date')) {
-      setSelectedDate(new Date(searchParams.get('date')!));
+      const newDate = new Date(searchParams.get('date')!);
+      setSelectedDate(newDate);
+      setCurrentMonth(startOfMonth(newDate));
       setIsFormOpen(true);
     }
   }, [searchParams]);
 
   const handleEdit = (event: Event) => {
-    setSelectedEvent(event);
-    setIsFormOpen(true);
+    checkAuth(() => {
+      setSelectedEvent(event);
+      setIsFormOpen(true);
+    });
   };
 
   const handleDelete = async (eventId: number) => {
     if (!entityId) return;
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      try {
-        await deleteEvent(parseInt(entityId), eventId);
-        fetchEvents();
-      } catch (error) {
-        console.error('Error deleting event:', error);
+    checkAuth(async () => {
+      if (window.confirm(translations.common.confirmDelete)) {
+        try {
+          await deleteEvent(parseInt(entityId), eventId);
+          fetchEvents();
+        } catch (error) {
+          console.error('Error deleting event:', error);
+        }
       }
-    }
+    });
   };
 
   const handleFormClose = () => {
@@ -90,17 +101,23 @@ export const EventList = () => {
     setSelectedDate(date);
   };
 
+  const handleMonthChange = (date: Date) => {
+    setCurrentMonth(startOfMonth(date));
+  };
+
   const getEventsForDate = (date: Date) => {
     return events.filter(event => isSameDay(new Date(event.date), date));
   };
 
   const handleDayClick = (date: Date) => {
-    const dayEvents = getEventsForDate(date);
-    if (dayEvents.length === 0) {
-      setSelectedDate(date);
-      setIsFormOpen(true);
-      setSelectedEvent(undefined);
-    }
+    checkAuth(() => {
+      const dayEvents = getEventsForDate(date);
+      if (dayEvents.length === 0) {
+        setSelectedDate(date);
+        setIsFormOpen(true);
+        setSelectedEvent(undefined);
+      }
+    });
   };
 
   const handleEventClick = (event: Event, element: HTMLElement) => {
@@ -113,23 +130,16 @@ export const EventList = () => {
     setSelectedEvent(undefined);
   };
 
+  const handleCreateClick = () => {
+    checkAuth(() => setIsFormOpen(true));
+  };
+
   if (loading) {
-    return (
-      <Container>
-        <Typography>Loading events...</Typography>
-      </Container>
-    );
+    return <LoadingState message={translations.events.loading} />;
   }
 
   if (error) {
-    return (
-      <Container>
-        <Box sx={{ my: 4 }}>
-          <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>
-          <Button variant="outlined" onClick={fetchEvents}>Try Again</Button>
-        </Box>
-      </Container>
-    );
+    return <ErrorState message={error} onRetry={fetchEvents} />;
   }
 
   if (!entity) return null;
@@ -141,15 +151,17 @@ export const EventList = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" component="h1">
-          Events by {entity.name}
+          {translations.events.title} {entity.name}
         </Typography>
-        <Button 
-          variant="contained" 
-          sx={eventListStyles.createButton}
-          onClick={() => setIsFormOpen(true)}
-        >
-          CREATE EVENT
-        </Button>
+        {isAuthenticated && (
+          <Button 
+            variant="contained" 
+            sx={eventListStyles.createButton}
+            onClick={handleCreateClick}
+          >
+            {translations.events.createButton}
+          </Button>
+        )}
       </Box>
 
       <Box sx={eventListStyles.calendarContainer}>
@@ -158,14 +170,16 @@ export const EventList = () => {
             <DateCalendar 
               value={selectedDate}
               onChange={handleDateChange}
+              onMonthChange={handleMonthChange}
               sx={eventListStyles.calendar}
-              dayOfWeekFormatter={(day) => WEEKDAY_LABELS[day.getDay()]}
+              dayOfWeekFormatter={(day) => translations.events.weekDays[day.getDay()]}
               slots={{
                 day: (props) => (
                   <CalendarDayCell
                     day={props.day}
                     events={getEventsForDate(props.day)}
                     selectedDate={selectedDate}
+                    currentMonth={currentMonth}
                     onDayClick={handleDayClick}
                     onEventClick={handleEventClick}
                   />
@@ -182,6 +196,7 @@ export const EventList = () => {
         onClose={handlePopoverClose}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isAuthenticated={isAuthenticated}
       />
 
       <EventForm
@@ -190,6 +205,12 @@ export const EventList = () => {
         onEventCreated={fetchEvents}
         initialData={selectedEvent}
         defaultDate={selectedDate}
+        currentMonth={currentMonth}
+      />
+
+      <AuthRequiredAlert 
+        open={showAuthAlert}
+        onClose={() => setShowAuthAlert(false)}
       />
     </Container>
   );

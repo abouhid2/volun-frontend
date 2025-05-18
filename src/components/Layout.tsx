@@ -1,7 +1,8 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { useNavigate, Link } from 'react-router-dom';
+import { AppBar, Box, Toolbar, Typography, Button, Stack } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { AuthService } from '../services/auth.service';
+import { useLanguage } from '../context/LanguageContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,55 +10,46 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
-  const user = AuthService.getCurrentUser();
+  const { translations } = useLanguage();
+  const isAuthenticated = AuthService.isAuthenticated();
+  const currentUser = AuthService.getCurrentUser();
 
   const handleLogout = () => {
     AuthService.logout();
-    navigate('/');
+    navigate('/login');
   };
 
   return (
-    <>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography 
-            variant="h6" 
-            component={Link} 
-            to="/" 
-            sx={{ 
-              flexGrow: 1, 
-              textDecoration: 'none', 
-              color: 'inherit' 
-            }}
-          >
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
             Volun
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {user ? (
-              <>
-                <Typography variant="body2">
-                  {user.name}
-                </Typography>
-                <Button color="inherit" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button color="inherit" component={Link} to="/login">
-                  Login
-                </Button>
-                <Button color="inherit" component={Link} to="/register">
-                  Register
-                </Button>
-              </>
-            )}
-          </Box>
+          {isAuthenticated ? (
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Typography variant="body1" color="inherit">
+                Logado como: {currentUser?.name}
+              </Typography>
+              <Button color="inherit" onClick={handleLogout}>
+                {translations.auth.logout}
+              </Button>
+            </Stack>
+          ) : (
+            <>
+              <Button color="inherit" onClick={() => navigate('/login')}>
+                {translations.auth.login}
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/register')}>
+                {translations.auth.register}
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
-      <Box sx={{ mt: 2 }}>
+      <Box component="main" sx={{ p: 3 }}>
         {children}
       </Box>
-    </>
+    </Box>
   );
 }; 

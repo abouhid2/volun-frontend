@@ -12,6 +12,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { createEvent, updateEvent } from "../services/api";
 import { useParams } from "react-router-dom";
 import { Event } from "../types";
+import { isSameMonth } from "date-fns";
 
 interface EventFormProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface EventFormProps {
   onEventCreated: () => void;
   initialData?: Event;
   defaultDate?: Date | null;
+  currentMonth: Date;
 }
 
 export const EventForm: React.FC<EventFormProps> = ({
@@ -26,7 +28,8 @@ export const EventForm: React.FC<EventFormProps> = ({
   onClose,
   onEventCreated,
   initialData,
-  defaultDate
+  defaultDate,
+  currentMonth
 }) => {
   const { entityId } = useParams<{ entityId: string }>();
   const [title, setTitle] = useState("");
@@ -89,6 +92,12 @@ export const EventForm: React.FC<EventFormProps> = ({
     setDate(null);
   };
 
+  const handleDateChange = (newDate: Date | null) => {
+    if (newDate && isSameMonth(newDate, currentMonth)) {
+      setDate(newDate);
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{initialData ? 'Edit Event' : 'Create New Event'}</DialogTitle>
@@ -115,15 +124,22 @@ export const EventForm: React.FC<EventFormProps> = ({
               multiline
               rows={4}
             />
-            <TextField
+            {/* <TextField
               label="Location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-            />
+            /> */}
             <DatePicker
               label="Date"
               value={date}
-              onChange={(newDate) => setDate(newDate)}
+              onChange={handleDateChange}
+              format="dd/MM/yyyy"
+              slotProps={{
+                textField: {
+                  required: true
+                }
+              }}
+              shouldDisableDate={(date) => !isSameMonth(date, currentMonth)}
             />
           </Box>
         </DialogContent>

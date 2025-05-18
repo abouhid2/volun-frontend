@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthService } from '../services/auth.service';
 import { Box, Button, TextField, Typography, Container } from '@mui/material';
+import { useLanguage } from '../context/LanguageContext';
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { translations } = useLanguage();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -27,7 +29,7 @@ export const Login = () => {
       await AuthService.login(formData);
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'An error occurred during login');
+      setError(err.response?.data?.error || translations.auth.loginError);
     }
   };
 
@@ -42,7 +44,7 @@ export const Login = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Sign in
+          {translations.auth.loginTitle}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
@@ -50,7 +52,7 @@ export const Login = () => {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label={translations.auth.email}
             name="email"
             autoComplete="email"
             autoFocus
@@ -62,7 +64,7 @@ export const Login = () => {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={translations.auth.password}
             type="password"
             id="password"
             autoComplete="current-password"
@@ -80,14 +82,14 @@ export const Login = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign In
+            {translations.auth.loginButton}
           </Button>
           <Button
             fullWidth
             variant="text"
             onClick={() => navigate('/register')}
           >
-            Don't have an account? Sign Up
+            {translations.auth.noAccount} {translations.auth.signUp}
           </Button>
         </Box>
       </Box>

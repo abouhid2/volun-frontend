@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardMedia, Typography, CardActionArea, Container, Box, Button, IconButton } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Container, Box, Button, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { Entity } from '../types';
 import { API_CONFIG } from '../config/api';
 import { EntityForm } from './EntityForm';
 import { deleteEntity } from '../services/api';
+import { useAuthCheck } from '../hooks/useAuthCheck';
+import { LoadingState } from './common/LoadingState';
+import { ErrorState } from './common/ErrorState';
+import { AuthRequiredAlert } from './common/AuthRequiredAlert';
+import { translations } from '../translations/pt';
 
 const DEFAULT_LOGO = "https://placehold.co/200x200";
 
@@ -17,27 +22,20 @@ export const EntityList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
 
   const fetchEntities = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Fetching entities from:', `${API_CONFIG.baseURL}/entities`);
       const response = await axios.get<Entity[]>(`${API_CONFIG.baseURL}/entities`);
-      console.log('Entities response:', response.data);
       setEntities(response.data);
     } catch (error: any) {
       console.error('Error fetching entities:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        baseURL: API_CONFIG.baseURL
-      });
       setError(
         error.response?.data?.message || 
         error.message || 
-        'Failed to load organizations. Please check if the backend server is running on ' + API_CONFIG.baseURL
+        `${translations.organizations.loadError} ${API_CONFIG.baseURL}`
       );
     } finally {
       setLoading(false);
@@ -45,7 +43,6 @@ export const EntityList = () => {
   };
 
   useEffect(() => {
-    console.log('EntityList mounted, API base URL:', API_CONFIG.baseURL);
     fetchEntities();
   }, []);
 
@@ -55,20 +52,28 @@ export const EntityList = () => {
 
   const handleEdit = (e: React.MouseEvent, entity: Entity) => {
     e.stopPropagation();
-    setSelectedEntity(entity);
-    setIsFormOpen(true);
+    checkAuth(() => {
+      setSelectedEntity(entity);
+      setIsFormOpen(true);
+    });
   };
 
   const handleDelete = async (e: React.MouseEvent, entityId: number) => {
     e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this organization?')) {
-      try {
-        await deleteEntity(entityId);
-        fetchEntities();
-      } catch (error) {
-        console.error('Error deleting entity:', error);
+    checkAuth(async () => {
+      if (window.confirm(translations.common.confirmDelete)) {
+        try {
+          await deleteEntity(entityId);
+          fetchEntities();
+        } catch (error) {
+          console.error('Error deleting entity:', error);
+        }
       }
-    }
+    });
+  };
+
+  const handleCreateClick = () => {
+    checkAuth(() => setIsFormOpen(true));
   };
 
   const handleFormClose = () => {
@@ -76,21 +81,29 @@ export const EntityList = () => {
     setSelectedEntity(undefined);
   };
 
+  if (loading) {
+    return <LoadingState message={translations.organizations.loading} />;
+  }
+
+  if (error) {
+    return <ErrorState message={error} onRetry={fetchEntities} />;
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Organizations
+          {translations.organizations.title}
         </Typography>
-        <Button variant="contained" onClick={() => setIsFormOpen(true)}>
-          Create Organization
+        <Button variant="contained" onClick={handleCreateClick}>
+          {translations.organizations.createButton}
         </Button>
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2 }}>
         {entities.map((entity) => (
           <Card key={entity.id} sx={{ height: '100%', position: 'relative' }}>
-            <CardActionArea onClick={() => handleEntityClick(entity.id)}>
+            <Box onClick={() => handleEntityClick(entity.id)} sx={{ cursor: 'pointer' }}>
               <CardMedia
                 component="img"
                 height="140"
@@ -110,15 +123,17 @@ export const EntityList = () => {
                   {entity.description}
                 </Typography>
               </CardContent>
-            </CardActionArea>
-            <Box sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: 1 }}>
-              <IconButton size="small" onClick={(e) => handleEdit(e, entity)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton size="small" onClick={(e) => handleDelete(e, entity.id)}>
-                <DeleteIcon />
-              </IconButton>
             </Box>
+            {isAuthenticated && (
+              <Box sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: 1 }}>
+                <IconButton size="small" onClick={(e) => handleEdit(e, entity)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton size="small" onClick={(e) => handleDelete(e, entity.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            )}
           </Card>
         ))}
       </Box>
@@ -128,6 +143,11 @@ export const EntityList = () => {
         onClose={handleFormClose}
         onSubmitSuccess={fetchEntities}
         initialData={selectedEntity}
+      />
+
+      <AuthRequiredAlert 
+        open={showAuthAlert}
+        onClose={() => setShowAuthAlert(false)}
       />
     </Container>
   );

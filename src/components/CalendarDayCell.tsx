@@ -8,6 +8,7 @@ interface CalendarDayCellProps {
   day: Date;
   events: Event[];
   selectedDate: Date | null;
+  currentMonth: Date;
   onDayClick: (date: Date) => void;
   onEventClick: (event: Event, element: HTMLElement) => void;
 }
@@ -16,11 +17,12 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   day,
   events,
   selectedDate,
+  currentMonth,
   onDayClick,
   onEventClick
 }) => {
   const isToday = isSameDay(day, new Date());
-  const isCurrentMonth = isSameMonth(day, selectedDate || new Date());
+  const isCurrentMonth = isSameMonth(day, currentMonth);
 
   return (
     <Box
@@ -34,6 +36,8 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
           bgcolor: isCurrentMonth ? '#f8f9fa' : 'transparent'
         }
       }}
+      role="gridcell"
+      aria-selected={isToday}
     >
       <Typography 
         sx={{ 

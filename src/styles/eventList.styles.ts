@@ -26,22 +26,35 @@ export const eventListStyles = {
     borderRadius: 1,
     boxShadow: 1,
     overflow: 'hidden',
-    height: '100vh'
   },
   calendar: {
     width: '100%',
     height: '100%',
+    '& .MuiPickersCalendarHeader-root': {
+      paddingLeft: 2,
+      paddingRight: 2,
+      marginTop: 1,
+      marginBottom: 1
+    },
+    '& .MuiDayCalendar-header': {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(7, 1fr)',
+      gap: 0
+    },
     '& .MuiDayCalendar-weekContainer': {
       margin: 0,
-      minHeight: '120px',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(7, 1fr)',
+      gap: 0
     },
     '& .MuiPickersDay-root': {
-      height: '120px',
       width: '100%',
+      height: '100%',
       borderRadius: 0,
       border: '1px solid',
       borderColor: 'divider',
       margin: 0,
+      padding: 0,
       '&:hover': {
         backgroundColor: 'action.hover',
       },
@@ -56,7 +69,8 @@ export const eventListStyles = {
       width: '100%',
       fontSize: '0.75rem',
       textAlign: 'left',
-      pl: 1
+      pl: 1,
+      margin: 0
     },
     '& .MuiPickersDay-dayOutsideMonth': {
       opacity: 0.5,
@@ -65,12 +79,15 @@ export const eventListStyles = {
     }
   },
   dayCell: {
-    height: '100%',
+    height: '120px',
     width: '100%',
     p: 1,
     position: 'relative',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    boxSizing: 'border-box',
+    border: '1px solid',
+    borderColor: 'divider'
   },
   dayNumber: {
     fontSize: '1rem',
@@ -79,7 +96,17 @@ export const eventListStyles = {
   },
   eventContainer: {
     flex: 1,
-    overflow: 'hidden'
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '4px'
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: '#bbb',
+      borderRadius: '4px'
+    }
   },
   eventItem: {
     backgroundColor: '#1a73e8',

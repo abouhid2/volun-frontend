@@ -11,6 +11,7 @@ interface EventPopoverProps {
   onClose: () => void;
   onEdit: (event: Event) => void;
   onDelete: (eventId: number) => void;
+  isAuthenticated: boolean;
 }
 
 export const EventPopover: React.FC<EventPopoverProps> = ({
@@ -18,7 +19,8 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
   anchorEl,
   onClose,
   onEdit,
-  onDelete
+  onDelete,
+  isAuthenticated
 }) => {
   if (!event) return null;
 
@@ -49,29 +51,31 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
         <Typography variant="body2" gutterBottom>
           Location: {event.location}
         </Typography>
-        <Box sx={eventListStyles.popoverActions}>
-          <Button
-            size="small"
-            startIcon={<EditIcon />}
-            onClick={() => {
-              onEdit(event);
-              onClose();
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            size="small"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => {
-              onDelete(event.id);
-              onClose();
-            }}
-          >
-            Delete
-          </Button>
-        </Box>
+        {isAuthenticated && (
+          <Box sx={eventListStyles.popoverActions}>
+            <Button
+              size="small"
+              startIcon={<EditIcon />}
+              onClick={() => {
+                onEdit(event);
+                onClose();
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              size="small"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => {
+                onDelete(event.id);
+                onClose();
+              }}
+            >
+              Delete
+            </Button>
+          </Box>
+        )}
       </Box>
     </Popover>
   );

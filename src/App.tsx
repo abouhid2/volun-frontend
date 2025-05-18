@@ -8,26 +8,29 @@ import { Register } from './components/Register';
 import { EventList } from './components/EventList';
 import { EntityList } from './components/EntityList';
 import { Layout } from './components/Layout';
+import { LanguageProvider } from './context/LanguageContext';
 
 const theme = createTheme();
 
-function App() {
+const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Router>
-          <Layout>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/" element={<EntityList />} />
-              <Route path="/events/:entityId" element={<EventList />} />
-            </Routes>
-          </Layout>
-        </Router>
-      </LocalizationProvider>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Router>
+            <Layout>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/" element={<EntityList />} />
+                <Route path="/events/:entityId" element={<EventList />} />
+              </Routes>
+            </Layout>
+          </Router>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   );
-}
+};
 
 export default App;
