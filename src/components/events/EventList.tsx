@@ -164,7 +164,7 @@ export const EventList = () => {
   const parsedEntityId = parseInt(entityId);
 
   return (
-    <Container maxWidth="lg" sx={eventListStyles.container}>
+    <Box sx={{ ...eventListStyles.container, width: '97vw', minHeight: '100vh', p: 0 }}>
       <Box sx={eventListStyles.header}>
         <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
@@ -224,6 +224,6 @@ export const EventList = () => {
         open={showAuthAlert}
         onClose={() => setShowAuthAlert(false)}
       />
-    </Container>
+    </Box>
   );
 };

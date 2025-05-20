@@ -10,10 +10,18 @@ interface CarBoxProps {
   onAddCar: () => void;
   onEditCar: (car: Car) => void;
   onDeleteCar: (carId: number) => void;
+  onRemoveParticipant: (participantId: number) => void;
   participants?: Participant[];
 }
 
-export const CarBox: React.FC<CarBoxProps> = ({ cars, onAddCar, onEditCar, onDeleteCar, participants = [] }) => {
+export const CarBox: React.FC<CarBoxProps> = ({ 
+  cars, 
+  onAddCar, 
+  onEditCar, 
+  onDeleteCar, 
+  onRemoveParticipant,
+  participants = [] 
+}) => {
   return (
     <Paper sx={{ p: 3, height: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -26,6 +34,7 @@ export const CarBox: React.FC<CarBoxProps> = ({ cars, onAddCar, onEditCar, onDel
         cars={cars}
         onEditCar={onEditCar}
         onDeleteCar={onDeleteCar}
+        onRemoveParticipant={onRemoveParticipant}
         participants={participants}
       />
     </Paper>

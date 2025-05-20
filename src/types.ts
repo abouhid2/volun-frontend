@@ -57,6 +57,7 @@ export interface Donation {
   quantity: number;
   unit: string;
   description: string;
+  car_id: number | null;
   user?: {
     id: number;
     name: string;

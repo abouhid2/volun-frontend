@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Tabs, Tab } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { Event, Car, Donation, Participant } from '../../types';
@@ -15,6 +15,7 @@ import { EventInfoBox } from './EventInfoBox';
 import { DonationBox } from './DonationBox';
 import { CarBox } from './CarBox';
 import { ParticipationBox } from './ParticipationBox';
+import { ParticipantDialog } from './ParticipantDialog';
 
 export const EventDetails: React.FC = () => {
   const { entityId, eventId } = useParams<{ entityId: string; eventId: string }>();
@@ -31,10 +32,8 @@ export const EventDetails: React.FC = () => {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isParticipantDialogOpen, setIsParticipantDialogOpen] = useState(false);
-  const [newParticipantName, setNewParticipantName] = useState('');
-  const [newParticipantStatus, setNewParticipantStatus] = useState('going');
-  const [newParticipantCarId, setNewParticipantCarId] = useState('');
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
@@ -110,6 +109,11 @@ export const EventDetails: React.FC = () => {
     }
   };
 
+  const handleEditDonation = (donation: Donation) => {
+    setSelectedDonation(donation);
+    setIsDonationFormOpen(true);
+  };
+
   const handleDeleteCar = async (carId: number) => {
     if (!eventId) return;
     if (window.confirm(translations.common.confirmDelete)) {
@@ -136,9 +140,6 @@ export const EventDetails: React.FC = () => {
 
   const handleEditParticipant = (participant: Participant) => {
     setSelectedParticipant(participant);
-    setNewParticipantName(participant.name);
-    setNewParticipantStatus(participant.status || 'going');
-    setNewParticipantCarId(participant.car_id ? String(participant.car_id) : '');
     setIsParticipantDialogOpen(true);
   };
 
@@ -152,38 +153,31 @@ export const EventDetails: React.FC = () => {
     }
   };
 
-  const handleSaveParticipant = async () => {
-    if (!eventId || !newParticipantName) return;
+  const handleSaveParticipant = async (data: { name: string; status: string; car_id?: number }) => {
+    if (!eventId) return;
     try {
       if (selectedParticipant) {
-        await updateParticipant(parseInt(eventId), selectedParticipant.id, {
-          name: newParticipantName,
-          status: newParticipantStatus,
-          car_id: newParticipantCarId ? parseInt(newParticipantCarId) : undefined,
-        });
+        await updateParticipant(parseInt(eventId), selectedParticipant.id, data);
       } else {
-        await participate(parseInt(eventId), {
-          name: newParticipantName,
-          status: newParticipantStatus,
-          car_id: newParticipantCarId ? parseInt(newParticipantCarId) : undefined,
-        });
+        await participate(parseInt(eventId), data);
       }
       setIsParticipantDialogOpen(false);
-      setNewParticipantName('');
-      setNewParticipantStatus('going');
-      setNewParticipantCarId('');
       setSelectedParticipant(null);
       fetchParticipants();
-    } catch (err) {}
+    } catch (err) {
+      console.error('Error saving participant:', err);
+    }
   };
 
   const handleRandomizeAssignment = async (fullyRandom = false) => {
     if (!eventId) return;
     const unassigned = participants.filter(p => !p.car_id);
+    const unassignedDonations = donations.filter(d => !d.car_id);
     const carsWithSeats = cars.map(car => ({
       ...car,
       assigned: participants.filter(p => p.car_id === car.id).length,
     }));
+    
     let pool = [...unassigned];
     if (fullyRandom) {
       pool = pool.sort(() => Math.random() - 0.5);
@@ -196,6 +190,20 @@ export const EventDetails: React.FC = () => {
         poolIndex++;
       }
     }
+
+    let donationPool = [...unassignedDonations];
+    if (fullyRandom) {
+      donationPool = donationPool.sort(() => Math.random() - 0.5);
+    }
+    let donationIndex = 0;
+    for (const car of cars) {
+      if (donationIndex < donationPool.length) {
+        const donation = donationPool[donationIndex];
+        await updateDonation(parseInt(eventId), donation.id, { car_id: car.id });
+        donationIndex++;
+      }
+    }
+    fetchData();
     fetchParticipants();
   };
 
@@ -206,6 +214,27 @@ export const EventDetails: React.FC = () => {
       await cleanCarSeats(parseInt(eventId), car.id, driverIds);
     }
     fetchParticipants();
+  };
+
+  const handleRemoveAllDonations = async () => {
+    if (!eventId) return;
+    for (const car of cars) {
+      const carDonations = donations.filter(d => d.car_id === car.id);
+      for (const donation of carDonations) {
+        await updateDonation(parseInt(eventId), donation.id, { car_id: null });
+      }
+    }
+    fetchData();
+  };
+
+  const handleRemoveParticipant = async (participantId: number) => {
+    if (!eventId) return;
+    try {
+      await updateParticipant(parseInt(eventId), participantId, { car_id: undefined });
+      fetchParticipants();
+    } catch (err) {
+      console.error('Error removing participant from car:', err);
+    }
   };
 
   if (loading) return <LoadingState message={translations.events.loading} />;
@@ -239,20 +268,6 @@ export const EventDetails: React.FC = () => {
                 location={event.location}
               />
             </Box>
-            <Box sx={{ flex: 1 }}>
-              <DonationBox
-                donations={donations}
-                onAddDonation={() => {
-                  setSelectedDonation(null);
-                  setIsDonationFormOpen(true);
-                }}
-                onEditDonation={(donation) => {
-                  setSelectedDonation(donation);
-                  setIsDonationFormOpen(true);
-                }}
-                onDeleteDonation={handleDeleteDonation}
-              />
-            </Box>
           </Box>
           <Box sx={{ flex: 1 }}>
             <CarBox
@@ -266,47 +281,80 @@ export const EventDetails: React.FC = () => {
                 setIsCarFormOpen(true);
               }}
               onDeleteCar={handleDeleteCar}
+              onRemoveParticipant={handleRemoveParticipant}
               participants={participants}
             />
           </Box>
         </Box>
         <Box sx={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <Button
-              variant="outlined"
-              startIcon={<ShuffleIcon />}
-              onClick={() => handleRandomizeAssignment(false)}
-            >
-              {/* {translations.cars.randomizeOrder} */}
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<CasinoIcon />}
-              onClick={() => handleRandomizeAssignment(true)}
-            >
-              {/* {translations.cars.randomizeFull} */}
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleRemoveAllBackSeats}
-            >
-              {translations.cars.removeBackSeats}
-            </Button>
+            {activeTab === 0 && (
+              <>
+                {/* <Button
+                  variant="outlined"
+                  startIcon={<ShuffleIcon />}
+                  onClick={() => handleRandomizeAssignment(false)}
+                >
+                  {translations.cars.randomizeOrder}
+                </Button> */}
+                <Button
+                  variant="outlined"
+                  startIcon={<CasinoIcon />}
+                  onClick={() => handleRandomizeAssignment(true)}
+                >
+                  {translations.cars.randomizeFull}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={handleRemoveAllBackSeats}
+                >
+                  {translations.cars.removeBackSeats}
+                </Button>
+              </>
+            )}
+            {activeTab === 1 && (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleRemoveAllDonations}
+              >
+                {translations.donations.removeAll}
+              </Button>
+            )}
           </Box>
-          <ParticipationBox
-            participants={participants}
-            cars={cars}
-            onAddParticipant={() => {
-              setSelectedParticipant(null);
-              setIsParticipantDialogOpen(true);
-              setNewParticipantName('');
-              setNewParticipantStatus('going');
-              setNewParticipantCarId('');
-            }}
-            onEditParticipant={handleEditParticipant}
-            onDeleteParticipant={handleDeleteParticipant}
-          />
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+              <Tab label="Participantes" />
+              <Tab label="Doações" />
+            </Tabs>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            {activeTab === 0 && (
+              <ParticipationBox
+                participants={participants}
+                cars={cars}
+                onAddParticipant={() => {
+                  setSelectedParticipant(null);
+                  setIsParticipantDialogOpen(true);
+                }}
+                onEditParticipant={handleEditParticipant}
+                onDeleteParticipant={handleDeleteParticipant}
+              />
+            )}
+            {activeTab === 1 && (
+              <DonationBox
+                donations={donations}
+                cars={cars}
+                onAddDonation={() => {
+                  setSelectedDonation(null);
+                  setIsDonationFormOpen(true);
+                }}
+                onEditDonation={handleEditDonation}
+                onDeleteDonation={handleDeleteDonation}
+              />
+            )}
+          </Box>
         </Box>
       </Box>
       <EventForm
@@ -330,56 +378,20 @@ export const EventDetails: React.FC = () => {
         onClose={() => setIsDonationFormOpen(false)}
         onSubmit={handleDonationSubmit}
         selectedDonation={selectedDonation}
+        cars={cars}
       />
-      <Dialog open={isParticipantDialogOpen} onClose={() => { setIsParticipantDialogOpen(false); setSelectedParticipant(null); }}>
-        <DialogTitle>{selectedParticipant ? translations.common.edit : translations.events.addParticipant}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Nome"
-            type="text"
-            fullWidth
-            value={newParticipantName}
-            onChange={e => setNewParticipantName(e.target.value)}
-          />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={newParticipantStatus}
-              label="Status"
-              onChange={e => setNewParticipantStatus(e.target.value)}
-            >
-              <MenuItem value="going">Indo</MenuItem>
-              <MenuItem value="not_going">Não vai</MenuItem>
-              <MenuItem value="maybe">Talvez</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Carro</InputLabel>
-            <Select
-              value={newParticipantCarId}
-              label="Carro"
-              onChange={e => setNewParticipantCarId(e.target.value)}
-            >
-              <MenuItem value="">Nenhum</MenuItem>
-              {cars.map(car => {
-                const assignedCount = participants.filter(p => p.car_id === car.id).length;
-                const isFull = assignedCount >= car.seats;
-                return (
-                  <MenuItem key={car.id} value={car.id} disabled={isFull}>
-                    {car.driver_name} {isFull ? `(${translations.cars.full})` : ''}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => { setIsParticipantDialogOpen(false); setSelectedParticipant(null); }}>{translations.common.cancel}</Button>
-          <Button onClick={handleSaveParticipant} variant="contained">{translations.common.save}</Button>
-        </DialogActions>
-      </Dialog>
+      <ParticipantDialog
+        open={isParticipantDialogOpen}
+        onClose={() => {
+          setIsParticipantDialogOpen(false);
+          setSelectedParticipant(null);
+        }}
+        onSave={handleSaveParticipant}
+        participant={selectedParticipant || undefined}
+        cars={cars}
+        participants={participants}
+        onRemoveParticipant={handleRemoveParticipant}
+      />
     </Container>
   );
 }; 

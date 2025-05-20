@@ -32,19 +32,28 @@ export const translations = {
     participants: 'Participantes',
     addParticipant: 'Adicionar Participante',
     noParticipants: 'Nenhum participante ainda',
+    totalParticipants: 'Total de Participantes',
+    status: {
+      title: 'Status',
+      going: 'Indo',
+      not_going: 'Não vai',
+      maybe: 'Talvez'
+    }
   },
   cars: {
     title: 'Carros',
     addButton: 'Adicionar Carro',
     driverId: 'ID do Motorista',
-    seats: 'Assentos',
+    seats: 'Assento',
+    car: 'Carro',
     unknownDriver: 'Motorista Desconhecido',
     participants: 'participantes',
     full: 'Lotado',
     driver: 'Motorista',
     randomizeOrder: 'Preencher carros (cronológico)',
-    randomizeFull: 'Preencher carros (aleatório)',
-    removeBackSeats: 'Remover caronas'
+    randomizeFull: 'Preencher carros',
+    removeBackSeats: 'Remover caronas',
+    noCar: 'Nenhum carro'
   },
   donations: {
     title: 'Doações',
@@ -53,6 +62,10 @@ export const translations = {
     quantity: 'Quantidade',
     unit: 'Unidade',
     description: 'Descrição',
+    car: 'Carro',
+    noCar: 'Nenhum carro',
+    assignedTo: 'Atribuído ao carro:',
+    removeAll: 'Remover Doações',
     types: {
       drinks: 'Bebidas',
       food: 'Comida',

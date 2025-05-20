@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Donation } from '../../types';
+import { Donation, Car } from '../../types';
 import { translations } from '../../translations/pt';
 
 interface DonationFormProps {
@@ -8,14 +8,16 @@ interface DonationFormProps {
   onClose: () => void;
   onSubmit: (donation: Partial<Donation>) => void;
   selectedDonation: Donation | null;
+  cars: Car[];
 }
 
-export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSubmit, selectedDonation }) => {
+export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSubmit, selectedDonation, cars }) => {
   const [formData, setFormData] = useState<Partial<Donation>>({
     donation_type: '',
     quantity: 0,
     unit: '',
-    description: ''
+    description: '',
+    car_id: null
   });
 
   useEffect(() => {
@@ -26,7 +28,8 @@ export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSub
         donation_type: '',
         quantity: 0,
         unit: '',
-        description: ''
+        description: '',
+        car_id: null
       });
     }
   }, [selectedDonation]);
@@ -85,6 +88,21 @@ export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSub
           value={formData.description || ''}
           onChange={(e) => handleChange('description', e.target.value)}
         />
+        <FormControl fullWidth margin="dense">
+          <InputLabel>{translations.donations.car}</InputLabel>
+          <Select
+            value={formData.car_id || ''}
+            label={translations.donations.car}
+            onChange={(e) => handleChange('car_id', e.target.value || null)}
+          >
+            <MenuItem value="">{translations.donations.noCar}</MenuItem>
+            {cars.map(car => (
+              <MenuItem key={car.id} value={car.id}>
+                {car.driver_name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{translations.common.cancel}</Button>

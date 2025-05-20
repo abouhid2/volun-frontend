@@ -29,4 +29,14 @@ export interface ParticipationRequest {
   user_id?: number;
   name?: string;
   status?: string;
+}
+
+export interface Donation {
+  id: number;
+  event_id: number;
+  donation_type: string;
+  quantity: number;
+  unit: string;
+  description: string;
+  car_id: number | null;
 } 

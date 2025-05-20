@@ -1,16 +1,23 @@
 import React from 'react';
 import { Paper, Typography, Box, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { Donation } from '../../types';
+import { Donation, Car } from '../../types';
 import { translations } from '../../translations/pt';
 
 interface DonationListProps {
   donations: Donation[];
+  cars: Car[];
   onEditDonation: (donation: Donation) => void;
   onDeleteDonation: (donationId: number) => void;
 }
 
-export const DonationList: React.FC<DonationListProps> = ({ donations, onEditDonation, onDeleteDonation }) => {
+export const DonationList: React.FC<DonationListProps> = ({ donations, cars, onEditDonation, onDeleteDonation }) => {
+  const getCarName = (carId: number | null) => {
+    if (!carId) return null;
+    const car = cars.find(c => c.id === carId);
+    return car?.driver_name;
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {donations.map((donation) => (
@@ -28,7 +35,12 @@ export const DonationList: React.FC<DonationListProps> = ({ donations, onEditDon
                   {donation.description}
                 </Typography>
               )}
-      </Box>
+              {donation.car_id && (
+                <Typography variant="body2" color="primary">
+                  {translations.donations.assignedTo} {getCarName(donation.car_id)}
+                </Typography>
+              )}
+            </Box>
             <Box>
               <IconButton size="small" onClick={() => onEditDonation(donation)}>
                 <EditIcon />
@@ -39,7 +51,7 @@ export const DonationList: React.FC<DonationListProps> = ({ donations, onEditDon
             </Box>
           </Box>
         </Paper>
-        ))}
+      ))}
     </Box>
   );
 }; 

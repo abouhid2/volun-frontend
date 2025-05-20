@@ -50,7 +50,7 @@ export const CarForm: React.FC<CarFormProps> = ({ open, onClose, onSubmit, selec
             label={translations.cars.seats}
             onChange={(e) => setSeats(e.target.value)}
           >
-            {Array.from({ length: 5 }, (_, i) => i).map((value) => (
+            {[2,3,4,5].map((value) => (
               <MenuItem key={value} value={value.toString()}>
                 {value}
               </MenuItem>

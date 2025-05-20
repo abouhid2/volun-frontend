@@ -1,6 +1,6 @@
 import React from 'react';
 import { Paper, Typography, Box, IconButton } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
 import { Car, Participant } from '../../types';
 import { translations } from '../../translations/pt';
 
@@ -8,10 +8,11 @@ interface CarListProps {
   cars: Car[];
   onEditCar: (car: Car) => void;
   onDeleteCar: (carId: number) => void;
+  onRemoveParticipant: (participantId: number) => void;
   participants?: Participant[];
 }
 
-export const CarList: React.FC<CarListProps> = ({ cars, onEditCar, onDeleteCar, participants = [] }) => {
+export const CarList: React.FC<CarListProps> = ({ cars, onEditCar, onDeleteCar, onRemoveParticipant, participants = [] }) => {
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
         {cars.map((car) => {
@@ -48,10 +49,24 @@ export const CarList: React.FC<CarListProps> = ({ cars, onEditCar, onDeleteCar, 
                           borderColor: 'divider',
                           borderRadius: 1,
                           bgcolor: isDriver ? 'primary.light' : 'action.selected',
-                          fontWeight: isDriver ? 'bold' : 'normal'
+                          fontWeight: isDriver ? 'bold' : 'normal',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
                         }}
                       >
-                        {participant.name} {isDriver ? `(${translations.cars.driver})` : ''}
+                        <span>
+                          {participant.name} {isDriver ? `(${translations.cars.driver})` : ''}
+                        </span>
+                        {!isDriver && (
+                          <IconButton 
+                            size="small" 
+                            onClick={() => onRemoveParticipant(participant.id)}
+                            sx={{ ml: 1 }}
+                          >
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                        )}
                       </Box>
                     );
                   }
