@@ -81,7 +81,7 @@ export const CarList: React.FC<CarListProps> = ({ cars, onEditCar, onDeleteCar, 
                         bgcolor: 'background.paper'
                       }}
                     >
-                      {`${translations.cars.seats} ${i + 1}`}
+                      {`${translations.cars.seat} ${i + 1}`}
                     </Box>
                   );
                 })}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Tabs, Tab } from '@mui/material';
+import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Paper } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { Event, Car, Donation, Participant } from '../../types';
@@ -16,6 +16,7 @@ import { DonationBox } from './DonationBox';
 import { CarBox } from './CarBox';
 import { ParticipationBox } from './ParticipationBox';
 import { ParticipantDialog } from './ParticipantDialog';
+import { EventSummary } from './EventSummary';
 
 export const EventDetails: React.FC = () => {
   const { entityId, eventId } = useParams<{ entityId: string; eventId: string }>();
@@ -34,6 +35,8 @@ export const EventDetails: React.FC = () => {
   const [isParticipantDialogOpen, setIsParticipantDialogOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const [donationTypes, setDonationTypes] = useState<string[]>(Object.values(translations.donations.types));
+  const [donationUnits, setDonationUnits] = useState<string[]>(Object.values(translations.donations.units));
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
@@ -237,6 +240,11 @@ export const EventDetails: React.FC = () => {
     }
   };
 
+  const handleUpdateDonationSettings = (types: string[], units: string[]) => {
+    setDonationTypes(types);
+    setDonationUnits(units);
+  };
+
   if (loading) return <LoadingState message={translations.events.loading} />;
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
   if (!event) return null;
@@ -258,6 +266,13 @@ export const EventDetails: React.FC = () => {
           {translations.common.edit}
         </Button>
       </Box>
+
+      <EventSummary 
+        cars={cars}
+        participants={participants}
+        donations={donations}
+      />
+
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, alignItems: 'stretch' }}>
         <Box sx={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
@@ -379,6 +394,9 @@ export const EventDetails: React.FC = () => {
         onSubmit={handleDonationSubmit}
         selectedDonation={selectedDonation}
         cars={cars}
+        types={donationTypes}
+        units={donationUnits}
+        onUpdateSettings={handleUpdateDonationSettings}
       />
       <ParticipantDialog
         open={isParticipantDialogOpen}

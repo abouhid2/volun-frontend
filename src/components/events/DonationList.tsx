@@ -25,10 +25,10 @@ export const DonationList: React.FC<DonationListProps> = ({ donations, cars, onE
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box>
               <Typography variant="subtitle1">
-                {translations.donations.types[donation.donation_type as keyof typeof translations.donations.types]}
+                {donation.donation_type}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {donation.quantity} {translations.donations.units[donation.unit as keyof typeof translations.donations.units]}
+                {donation.quantity} {donation.unit}
               </Typography>
               {donation.description && (
                 <Typography variant="body2" color="text.secondary">
