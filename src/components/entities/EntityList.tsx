@@ -47,7 +47,7 @@ export const EntityList = () => {
   }, []);
 
   const handleEntityClick = (entityId: number) => {
-    navigate(`/entities/${entityId}`);
+    navigate(`/entities/${entityId}/events`);
   };
 
   const handleEdit = (e: React.MouseEvent, entity: Entity) => {

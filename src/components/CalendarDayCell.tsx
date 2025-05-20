@@ -50,7 +50,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   };
 
   const handleViewDetails = () => {
-    if (selectedEvent) {
+    if (selectedEvent && entityId) {
       navigate(`/entities/${entityId}/events/${selectedEvent.id}`);
     }
     handleMenuClose();

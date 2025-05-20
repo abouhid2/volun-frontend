@@ -30,6 +30,40 @@ export const translations = {
     forbidden: 'Você não tem permissão para acessar esta página',
     networkError: 'Erro de conexão. Verifique sua internet e tente novamente',
   },
+  cars: {
+    title: 'Carros',
+    addButton: 'Adicionar Carro',
+    driverId: 'ID do Motorista',
+    seats: 'Assentos',
+    unknownDriver: 'Motorista Desconhecido',
+    participants: 'participantes'
+  },
+  donations: {
+    title: 'Doações',
+    addButton: 'Adicionar Doação',
+    type: 'Tipo de Doação',
+    quantity: 'Quantidade',
+    unit: 'Unidade',
+    description: 'Descrição',
+    types: {
+      drinks: 'Bebidas',
+      food: 'Comida',
+      dog_food: 'Ração',
+      cleaning_supplies: 'Material de Limpeza',
+      medical_supplies: 'Material Médico',
+      clothing: 'Roupas',
+      other: 'Outro'
+    },
+    units: {
+      kg: 'Quilogramas',
+      g: 'Gramas',
+      l: 'Litros',
+      ml: 'Mililitros',
+      units: 'Unidades',
+      boxes: 'Caixas',
+      bags: 'Sacos'
+    }
+  },
   auth: {
     login: 'Entrar',
     register: 'Registrar',

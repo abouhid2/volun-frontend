@@ -157,6 +157,12 @@ export const EventList = () => {
 
   if (!entity) return null;
 
+  if (!entityId) {
+    return <ErrorState message={translations.events.entityNotFound} onRetry={fetchEvents} />;
+  }
+
+  const parsedEntityId = parseInt(entityId);
+
   return (
     <Container maxWidth="lg" sx={eventListStyles.container}>
       <Box sx={eventListStyles.header}>
@@ -195,7 +201,7 @@ export const EventList = () => {
                     currentMonth={currentMonth}
                     onDayClick={handleDayClick}
                     onEventClick={handleEventClick}
-                    entityId={parseInt(entityId!)}
+                    entityId={parsedEntityId}
                   />
                 )
               }}

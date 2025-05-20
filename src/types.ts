@@ -30,4 +30,30 @@ export interface Participant {
 
 export interface ParticipationRequest {
   name: string;
+}
+
+export interface Car {
+  id: number;
+  event_id: number;
+  driver_id: number;
+  seats: number;
+  driver?: {
+    id: number;
+    name: string;
+  };
+  participants?: Participant[];
+}
+
+export interface Donation {
+  id: number;
+  event_id: number;
+  user_id: number;
+  donation_type: string;
+  quantity: number;
+  unit: string;
+  description: string;
+  user?: {
+    id: number;
+    name: string;
+  };
 } 
