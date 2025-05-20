@@ -4,7 +4,6 @@ import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { Event, Entity } from "../../types";
 import { EventForm } from "./EventForm";
 import { CalendarDayCell } from "../../components/CalendarDayCell";
-import { EventPopover } from "./EventPopover";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import { API_CONFIG } from '../../config/api';
@@ -38,7 +37,6 @@ export const EventList = () => {
     searchParams.get('date') ? new Date(searchParams.get('date')!) : new Date()
   );
   const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(new Date()));
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
 
@@ -104,6 +102,8 @@ export const EventList = () => {
         try {
           await deleteEvent(parseInt(entityId), eventId);
           fetchEvents();
+          setIsFormOpen(false);
+          setSelectedEvent(undefined);
         } catch (error) {
           console.error('Error deleting event:', error);
         }
@@ -139,14 +139,8 @@ export const EventList = () => {
     });
   };
 
-  const handleEventClick = (event: Event, element: HTMLElement) => {
-    setSelectedEvent(event);
-    setAnchorEl(element);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-    setSelectedEvent(undefined);
+  const handleEventClick = (event: Event) => {
+    handleEdit(event);
   };
 
   const handleCreateClick = () => {
@@ -209,15 +203,6 @@ export const EventList = () => {
         </LocalizationProvider>
       </Box>
 
-      <EventPopover
-        event={selectedEvent}
-        anchorEl={anchorEl}
-        onClose={handlePopoverClose}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        isAuthenticated={isAuthenticated}
-      />
-
       <EventForm
         open={isFormOpen}
         onClose={handleFormClose}
@@ -225,6 +210,7 @@ export const EventList = () => {
         initialData={selectedEvent}
         defaultDate={selectedDate}
         currentMonth={currentMonth}
+        onDelete={selectedEvent ? () => handleDelete(selectedEvent.id) : undefined}
       />
 
       <AuthRequiredAlert 

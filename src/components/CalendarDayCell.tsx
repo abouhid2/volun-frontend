@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { format, isSameDay, isSameMonth } from 'date-fns';
 import { Event } from '../types';
 import { eventListStyles } from '../styles/eventList.styles';
+import { translations } from '../translations/pt';
 
 interface CalendarDayCellProps {
   day: Date;
@@ -10,7 +11,7 @@ interface CalendarDayCellProps {
   selectedDate: Date | null;
   currentMonth: Date;
   onDayClick: (date: Date) => void;
-  onEventClick: (event: Event, element: HTMLElement) => void;
+  onEventClick: (event: Event) => void;
 }
 
 export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
@@ -49,18 +50,29 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         {format(day, 'dd')}
       </Typography>
       <Box sx={eventListStyles.eventContainer}>
-        {events.map((event) => (
+        {events.slice(0, 2).map((event) => (
           <Box
             key={event.id}
             onClick={(e) => {
               e.stopPropagation();
-              onEventClick(event, e.currentTarget);
+              onEventClick(event);
             }}
             sx={eventListStyles.eventItem}
           >
             {event.title}
           </Box>
         ))}
+        {events.length > 2 && (
+          <Box
+            sx={{ ...eventListStyles.eventItem, cursor: 'pointer', color: '#1976d2', fontWeight: 500 }}
+            onClick={e => {
+              e.stopPropagation();
+              console.log('Show all events for day', day, events);
+            }}
+          >
+            {`+${events.length - 2} ${translations.common.more}`}
+          </Box>
+        )}
       </Box>
     </Box>
   );

@@ -9,6 +9,7 @@ export const translations = {
     save: 'Salvar',
     authRequired: 'Você precisa estar logado para realizar esta ação',
     confirmDelete: 'Tem certeza que deseja excluir?',
+    more: 'mais',
   },
   organizations: {
     title: 'Organizações',
@@ -61,6 +62,7 @@ export const translations = {
       description: 'Descrição',
       date: 'Data',
       location: 'Local',
+      time: 'Horário',
     },
   },
 } as const; 
