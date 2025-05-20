@@ -9,6 +9,7 @@ import { EventList } from './components/events/EventList';
 import { EntityList } from './components/entities/EntityList';
 import { Layout } from './components/Layout';
 import { LanguageProvider } from './context/LanguageContext';
+import { EventDetails } from './components/events/EventDetails';
 
 const theme = createTheme();
 
@@ -24,6 +25,7 @@ const App = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/" element={<EntityList />} />
                 <Route path="/entities/:entityId/events" element={<EventList />} />
+                <Route path="/entities/:entityId/events/:eventId" element={<EventDetails />} />
               </Routes>
             </Layout>
           </Router>

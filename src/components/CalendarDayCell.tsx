@@ -1,9 +1,10 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Menu, MenuItem } from '@mui/material';
 import { format, isSameDay, isSameMonth } from 'date-fns';
 import { Event } from '../types';
 import { eventListStyles } from '../styles/eventList.styles';
 import { translations } from '../translations/pt';
+import { useNavigate } from 'react-router-dom';
 
 interface CalendarDayCellProps {
   day: Date;
@@ -12,6 +13,7 @@ interface CalendarDayCellProps {
   currentMonth: Date;
   onDayClick: (date: Date) => void;
   onEventClick: (event: Event) => void;
+  entityId: number;
 }
 
 export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
@@ -20,10 +22,39 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   selectedDate,
   currentMonth,
   onDayClick,
-  onEventClick
+  onEventClick,
+  entityId
 }) => {
+  const navigate = useNavigate();
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const isToday = isSameDay(day, new Date());
   const isCurrentMonth = isSameMonth(day, currentMonth);
+
+  const handleEventClick = (event: React.MouseEvent<HTMLElement>, eventData: Event) => {
+    event.stopPropagation();
+    setSelectedEvent(eventData);
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setSelectedEvent(null);
+  };
+
+  const handleEdit = () => {
+    if (selectedEvent) {
+      onEventClick(selectedEvent);
+    }
+    handleMenuClose();
+  };
+
+  const handleViewDetails = () => {
+    if (selectedEvent) {
+      navigate(`/entities/${entityId}/events/${selectedEvent.id}`);
+    }
+    handleMenuClose();
+  };
 
   return (
     <Box
@@ -53,10 +84,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         {events.slice(0, 2).map((event) => (
           <Box
             key={event.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              onEventClick(event);
-            }}
+            onClick={(e) => handleEventClick(e, event)}
             sx={eventListStyles.eventItem}
           >
             {event.title}
@@ -74,6 +102,19 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
           </Box>
         )}
       </Box>
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleEdit}>
+          {translations.common.edit}
+        </MenuItem>
+        <MenuItem onClick={handleViewDetails}>
+          {translations.common.viewDetails}
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }; 

@@ -10,6 +10,7 @@ export const translations = {
     authRequired: 'Você precisa estar logado para realizar esta ação',
     confirmDelete: 'Tem certeza que deseja excluir?',
     more: 'mais',
+    viewDetails: 'Ver Detalhes'
   },
   organizations: {
     title: 'Organizações',

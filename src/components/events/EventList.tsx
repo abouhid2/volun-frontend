@@ -195,6 +195,7 @@ export const EventList = () => {
                     currentMonth={currentMonth}
                     onDayClick={handleDayClick}
                     onEventClick={handleEventClick}
+                    entityId={parseInt(entityId!)}
                   />
                 )
               }}
