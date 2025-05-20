@@ -26,6 +26,8 @@ export interface Participant {
   id: number;
   name: string;
   user_id?: number;
+  status?: string;
+  car_id?: number;
 }
 
 export interface ParticipationRequest {

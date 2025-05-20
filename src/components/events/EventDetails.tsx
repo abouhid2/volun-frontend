@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { Event, Car, Donation, Participant } from '../../types';
-import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate } from '../../services/api';
+import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats } from '../../services/api';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { translations } from '../../translations/pt';
@@ -34,6 +34,7 @@ export const EventDetails: React.FC = () => {
   const [newParticipantName, setNewParticipantName] = useState('');
   const [newParticipantStatus, setNewParticipantStatus] = useState('going');
   const [newParticipantCarId, setNewParticipantCarId] = useState('');
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
@@ -75,11 +76,19 @@ export const EventDetails: React.FC = () => {
       if (selectedCar) {
         await updateCar(parseInt(eventId), selectedCar.id, car);
       } else {
-        await createCar(parseInt(eventId), car as Omit<Car, 'id'>);
+        const createdCar = await createCar(parseInt(eventId), car as Omit<Car, 'id'>);
+        if (car.driver_name) {
+          await participate(parseInt(eventId), {
+            name: car.driver_name,
+            status: 'going',
+            car_id: createdCar.id
+          });
+        }
       }
       setIsCarFormOpen(false);
       setSelectedCar(null);
       fetchData();
+      fetchParticipants();
     } catch (err) {
       console.error('Error saving car:', err);
     }
@@ -125,22 +134,78 @@ export const EventDetails: React.FC = () => {
     }
   };
 
-  const handleAddParticipant = async () => {
+  const handleEditParticipant = (participant: Participant) => {
+    setSelectedParticipant(participant);
+    setNewParticipantName(participant.name);
+    setNewParticipantStatus(participant.status || 'going');
+    setNewParticipantCarId(participant.car_id ? String(participant.car_id) : '');
+    setIsParticipantDialogOpen(true);
+  };
+
+  const handleDeleteParticipant = async (participant: Participant) => {
+    if (!eventId) return;
+    if (window.confirm(translations.common.confirmDelete)) {
+      try {
+        await deleteParticipant(parseInt(eventId), participant.id);
+        fetchParticipants();
+      } catch (err) {}
+    }
+  };
+
+  const handleSaveParticipant = async () => {
     if (!eventId || !newParticipantName) return;
     try {
-      await participate(parseInt(eventId), {
-        name: newParticipantName,
-        status: newParticipantStatus,
-        car_id: newParticipantCarId ? parseInt(newParticipantCarId) : undefined,
-      });
+      if (selectedParticipant) {
+        await updateParticipant(parseInt(eventId), selectedParticipant.id, {
+          name: newParticipantName,
+          status: newParticipantStatus,
+          car_id: newParticipantCarId ? parseInt(newParticipantCarId) : undefined,
+        });
+      } else {
+        await participate(parseInt(eventId), {
+          name: newParticipantName,
+          status: newParticipantStatus,
+          car_id: newParticipantCarId ? parseInt(newParticipantCarId) : undefined,
+        });
+      }
       setIsParticipantDialogOpen(false);
       setNewParticipantName('');
       setNewParticipantStatus('going');
       setNewParticipantCarId('');
+      setSelectedParticipant(null);
       fetchParticipants();
-    } catch (err) {
-      // handle error if needed
+    } catch (err) {}
+  };
+
+  const handleRandomizeAssignment = async (fullyRandom = false) => {
+    if (!eventId) return;
+    const unassigned = participants.filter(p => !p.car_id);
+    const carsWithSeats = cars.map(car => ({
+      ...car,
+      assigned: participants.filter(p => p.car_id === car.id).length,
+    }));
+    let pool = [...unassigned];
+    if (fullyRandom) {
+      pool = pool.sort(() => Math.random() - 0.5);
     }
+    let poolIndex = 0;
+    for (const car of carsWithSeats) {
+      for (let seat = car.assigned; seat < car.seats && poolIndex < pool.length; seat++) {
+        const participant = pool[poolIndex];
+        await updateParticipant(parseInt(eventId), participant.id, { car_id: car.id });
+        poolIndex++;
+      }
+    }
+    fetchParticipants();
+  };
+
+  const handleRemoveAllBackSeats = async () => {
+    if (!eventId) return;
+    for (const car of cars) {
+      const driverIds = participants.filter(p => p.car_id === car.id && p.name === car.driver_name).map(p => p.id);
+      await cleanCarSeats(parseInt(eventId), car.id, driverIds);
+    }
+    fetchParticipants();
   };
 
   if (loading) return <LoadingState message={translations.events.loading} />;
@@ -148,7 +213,7 @@ export const EventDetails: React.FC = () => {
   if (!event) return null;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container sx={{ py: 4, width: '100%', maxWidth: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
         <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
           <ArrowBackIcon />
@@ -201,13 +266,46 @@ export const EventDetails: React.FC = () => {
                 setIsCarFormOpen(true);
               }}
               onDeleteCar={handleDeleteCar}
+              participants={participants}
             />
           </Box>
         </Box>
         <Box sx={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+            <Button
+              variant="outlined"
+              startIcon={<ShuffleIcon />}
+              onClick={() => handleRandomizeAssignment(false)}
+            >
+              {/* {translations.cars.randomizeOrder} */}
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<CasinoIcon />}
+              onClick={() => handleRandomizeAssignment(true)}
+            >
+              {/* {translations.cars.randomizeFull} */}
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleRemoveAllBackSeats}
+            >
+              {translations.cars.removeBackSeats}
+            </Button>
+          </Box>
           <ParticipationBox
             participants={participants}
-            onAddParticipant={() => setIsParticipantDialogOpen(true)}
+            cars={cars}
+            onAddParticipant={() => {
+              setSelectedParticipant(null);
+              setIsParticipantDialogOpen(true);
+              setNewParticipantName('');
+              setNewParticipantStatus('going');
+              setNewParticipantCarId('');
+            }}
+            onEditParticipant={handleEditParticipant}
+            onDeleteParticipant={handleDeleteParticipant}
           />
         </Box>
       </Box>
@@ -233,8 +331,8 @@ export const EventDetails: React.FC = () => {
         onSubmit={handleDonationSubmit}
         selectedDonation={selectedDonation}
       />
-      <Dialog open={isParticipantDialogOpen} onClose={() => setIsParticipantDialogOpen(false)}>
-        <DialogTitle>{translations.events.addParticipant}</DialogTitle>
+      <Dialog open={isParticipantDialogOpen} onClose={() => { setIsParticipantDialogOpen(false); setSelectedParticipant(null); }}>
+        <DialogTitle>{selectedParticipant ? translations.common.edit : translations.events.addParticipant}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -265,15 +363,21 @@ export const EventDetails: React.FC = () => {
               onChange={e => setNewParticipantCarId(e.target.value)}
             >
               <MenuItem value="">Nenhum</MenuItem>
-              {cars.map(car => (
-                <MenuItem key={car.id} value={car.id}>{car.driver_name}</MenuItem>
-              ))}
+              {cars.map(car => {
+                const assignedCount = participants.filter(p => p.car_id === car.id).length;
+                const isFull = assignedCount >= car.seats;
+                return (
+                  <MenuItem key={car.id} value={car.id} disabled={isFull}>
+                    {car.driver_name} {isFull ? `(${translations.cars.full})` : ''}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsParticipantDialogOpen(false)}>{translations.common.cancel}</Button>
-          <Button onClick={handleAddParticipant} variant="contained">{translations.common.save}</Button>
+          <Button onClick={() => { setIsParticipantDialogOpen(false); setSelectedParticipant(null); }}>{translations.common.cancel}</Button>
+          <Button onClick={handleSaveParticipant} variant="contained">{translations.common.save}</Button>
         </DialogActions>
       </Dialog>
     </Container>

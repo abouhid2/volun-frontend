@@ -73,4 +73,17 @@ export const deleteDonation = (eventId: number, donationId: number) =>
   axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/donations/${donationId}`).then(res => res.data);
 
 export const getParticipants = (eventId: number) => 
-  axiosInstance.get<Participant[]>(`${API_CONFIG.baseURL}/events/${eventId}/participants`).then(res => res.data); 
+  axiosInstance.get<Participant[]>(`${API_CONFIG.baseURL}/events/${eventId}/participants`).then(res => res.data);
+
+export const updateParticipant = async (eventId: number, participantId: number, data: Partial<ParticipationRequest>): Promise<Participant> => {
+  const response = await axiosInstance.patch(`${API_CONFIG.baseURL}/events/${eventId}/participants/${participantId}`, data);
+  return response.data;
+};
+
+export const deleteParticipant = async (eventId: number, participantId: number): Promise<void> => {
+  await axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/participants/${participantId}`);
+};
+
+export const cleanCarSeats = async (eventId: number, carId: number, driverIds: number[]): Promise<void> => {
+  await axiosInstance.post(`${API_CONFIG.baseURL}/events/${eventId}/cars/${carId}/clean_seats`, { driver_ids: driverIds });
+}; 

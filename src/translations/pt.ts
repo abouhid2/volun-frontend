@@ -39,7 +39,12 @@ export const translations = {
     driverId: 'ID do Motorista',
     seats: 'Assentos',
     unknownDriver: 'Motorista Desconhecido',
-    participants: 'participantes'
+    participants: 'participantes',
+    full: 'Lotado',
+    driver: 'Motorista',
+    randomizeOrder: 'Preencher carros (cronológico)',
+    randomizeFull: 'Preencher carros (aleatório)',
+    removeBackSeats: 'Remover caronas'
   },
   donations: {
     title: 'Doações',
