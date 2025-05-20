@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Container, Typography, Button, Box, IconButton } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
-import { Event, Entity } from "../types";
+import { Event, Entity } from "../../types";
 import { EventForm } from "./EventForm";
-import { CalendarDayCell } from "./CalendarDayCell";
+import { CalendarDayCell } from "../../components/CalendarDayCell";
 import { EventPopover } from "./EventPopover";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import { API_CONFIG } from '../config/api';
-import { deleteEvent } from '../services/api';
+import axios, { AxiosError } from 'axios';
+import { API_CONFIG } from '../../config/api';
+import { deleteEvent } from '../../services/api';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { format, isSameDay, parseISO, isSameMonth, startOfMonth } from 'date-fns';
+import { isSameDay, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { eventListStyles } from '../styles/eventList.styles';
-import { useAuthCheck } from '../hooks/useAuthCheck';
-import { LoadingState } from './common/LoadingState';
-import { ErrorState } from './common/ErrorState';
-import { AuthRequiredAlert } from './common/AuthRequiredAlert';
-import { translations } from '../translations/pt';
+import { eventListStyles } from '../../styles/eventList.styles';
+import { useAuthCheck } from '../../hooks/useAuthCheck';
+import { LoadingState } from '../common/LoadingState';
+import { ErrorState } from '../common/ErrorState';
+import { AuthRequiredAlert } from '../common/AuthRequiredAlert';
+import { translations } from '../../translations/pt';
+
+interface ErrorResponse {
+  error: string;
+}
 
 export const EventList = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -38,7 +42,7 @@ export const EventList = () => {
   const navigate = useNavigate();
   const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,19 +52,34 @@ export const EventList = () => {
       ]);
       setEvents(eventsResponse.data);
       setEntity(entityResponse.data);
-    } catch (error: any) {
-      console.error("Error fetching events:", error);
-      setError(error.response?.data?.error || translations.events.loadError);
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response) {
+        const status = axiosError.response.status;
+        if (status === 404) {
+          setError(translations.events.entityNotFound);
+        } else if (status === 401) {
+          setError(translations.events.unauthorized);
+        } else if (status === 403) {
+          setError(translations.events.forbidden);
+        } else {
+          setError(axiosError.response.data?.error || translations.events.loadError);
+        }
+      } else if (axiosError.request) {
+        setError(translations.events.networkError);
+      } else {
+        setError(translations.events.loadError);
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [entityId]);
 
   useEffect(() => {
     if (entityId) {
       fetchEvents();
     }
-  }, [entityId]);
+  }, [entityId, fetchEvents]);
 
   useEffect(() => {
     if (searchParams.get('date')) {

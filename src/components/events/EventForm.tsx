@@ -9,9 +9,9 @@ import {
   DialogActions,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { createEvent, updateEvent } from "../services/api";
+import { createEvent, updateEvent } from "../../services/api";
 import { useParams } from "react-router-dom";
-import { Event } from "../types";
+import { Event } from "../../types";
 import { isSameMonth } from "date-fns";
 
 interface EventFormProps {
@@ -124,11 +124,11 @@ export const EventForm: React.FC<EventFormProps> = ({
               multiline
               rows={4}
             />
-            {/* <TextField
+            <TextField
               label="Location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-            /> */}
+            />
             <DatePicker
               label="Date"
               value={date}

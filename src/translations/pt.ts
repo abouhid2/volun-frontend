@@ -23,6 +23,10 @@ export const translations = {
     loadError: 'Falha ao carregar eventos. Por favor, tente novamente mais tarde.',
     location: 'Local',
     weekDays: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+    entityNotFound: 'Entidade não encontrada',
+    unauthorized: 'Você precisa estar autenticado para acessar esta página',
+    forbidden: 'Você não tem permissão para acessar esta página',
+    networkError: 'Erro de conexão. Verifique sua internet e tente novamente',
   },
   auth: {
     login: 'Entrar',

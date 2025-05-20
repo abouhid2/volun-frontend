@@ -5,8 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
-import { EventList } from './components/EventList';
-import { EntityList } from './components/EntityList';
+import { EventList } from './components/events/EventList';
+import { EntityList } from './components/entities/EntityList';
 import { Layout } from './components/Layout';
 import { LanguageProvider } from './context/LanguageContext';
 
@@ -23,7 +23,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/" element={<EntityList />} />
-                <Route path="/events/:entityId" element={<EventList />} />
+                <Route path="/entities/:entityId/events" element={<EventList />} />
               </Routes>
             </Layout>
           </Router>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardContent, Typography, Box, List, ListItem, ListItemText, Divider } from "@mui/material";
-import { Event } from "../types";
-import { ParticipantButton } from "./ParticipantButton";
+import { Event } from "../../types";
+import { ParticipantButton } from "../ParticipantButton";
 
 interface EventCardProps {
   event: Event;

@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardMedia, Typography, Container, Box, Button, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
-import { Entity } from '../types';
-import { API_CONFIG } from '../config/api';
+import { Entity } from '../../types';
+import { API_CONFIG } from '../../config/api';
 import { EntityForm } from './EntityForm';
-import { deleteEntity } from '../services/api';
-import { useAuthCheck } from '../hooks/useAuthCheck';
-import { LoadingState } from './common/LoadingState';
-import { ErrorState } from './common/ErrorState';
-import { AuthRequiredAlert } from './common/AuthRequiredAlert';
-import { translations } from '../translations/pt';
+import { deleteEntity } from '../../services/api';
+import { useAuthCheck } from '../../hooks/useAuthCheck';
+import { LoadingState } from '../common/LoadingState';
+import { ErrorState } from '../common/ErrorState';
+import { AuthRequiredAlert } from '../common/AuthRequiredAlert';
+import { translations } from '../../translations/pt';
 
 const DEFAULT_LOGO = "https://placehold.co/200x200";
 
@@ -47,7 +47,7 @@ export const EntityList = () => {
   }, []);
 
   const handleEntityClick = (entityId: number) => {
-    navigate(`/events/${entityId}`);
+    navigate(`/entities/${entityId}`);
   };
 
   const handleEdit = (e: React.MouseEvent, entity: Entity) => {

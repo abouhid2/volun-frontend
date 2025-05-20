@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Typography, Button, Popover } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
-import { Event } from '../types';
-import { eventListStyles } from '../styles/eventList.styles';
+import { Event } from '../../types';
+import { eventListStyles } from '../../styles/eventList.styles';
 
 interface EventPopoverProps {
   event: Event | undefined;

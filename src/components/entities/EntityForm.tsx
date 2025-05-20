@@ -8,8 +8,8 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Entity } from '../types';
-import { createEntity, updateEntity } from '../services/api';
+import { Entity } from '../../types';
+import { createEntity, updateEntity } from '../../services/api';
 
 interface EntityFormProps {
   open: boolean;
