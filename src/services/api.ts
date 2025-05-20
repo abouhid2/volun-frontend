@@ -70,4 +70,7 @@ export const updateDonation = (eventId: number, donationId: number, donation: Pa
   axiosInstance.patch<Donation>(`${API_CONFIG.baseURL}/events/${eventId}/donations/${donationId}`, donation).then(res => res.data);
 
 export const deleteDonation = (eventId: number, donationId: number) => 
-  axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/donations/${donationId}`).then(res => res.data); 
+  axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/donations/${donationId}`).then(res => res.data);
+
+export const getParticipants = (eventId: number) => 
+  axiosInstance.get<Participant[]>(`${API_CONFIG.baseURL}/events/${eventId}/participants`).then(res => res.data); 

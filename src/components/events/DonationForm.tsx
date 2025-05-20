@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Donation } from '../../types';
 import { translations } from '../../translations/pt';
@@ -11,8 +11,35 @@ interface DonationFormProps {
 }
 
 export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSubmit, selectedDonation }) => {
+  const [formData, setFormData] = useState<Partial<Donation>>({
+    donation_type: '',
+    quantity: 0,
+    unit: '',
+    description: ''
+  });
+
+  useEffect(() => {
+    if (selectedDonation) {
+      setFormData(selectedDonation);
+    } else {
+      setFormData({
+        donation_type: '',
+        quantity: 0,
+        unit: '',
+        description: ''
+      });
+    }
+  }, [selectedDonation]);
+
+  const handleChange = (field: keyof Donation, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSubmit = () => {
-    onSubmit(selectedDonation || {});
+    onSubmit(formData);
   };
 
   return (
@@ -22,8 +49,8 @@ export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSub
         <FormControl fullWidth margin="dense">
           <InputLabel>{translations.donations.type}</InputLabel>
           <Select
-            value={selectedDonation?.donation_type || ''}
-            onChange={(e) => onSubmit({ donation_type: e.target.value })}
+            value={formData.donation_type || ''}
+            onChange={(e) => handleChange('donation_type', e.target.value)}
           >
             {Object.entries(translations.donations.types).map(([value, label]) => (
               <MenuItem key={value} value={value}>{label}</MenuItem>
@@ -35,14 +62,14 @@ export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSub
           label={translations.donations.quantity}
           type="number"
           fullWidth
-          value={selectedDonation?.quantity || ''}
-          onChange={(e) => onSubmit({ quantity: parseInt(e.target.value) })}
+          value={formData.quantity || ''}
+          onChange={(e) => handleChange('quantity', parseInt(e.target.value))}
         />
         <FormControl fullWidth margin="dense">
           <InputLabel>{translations.donations.unit}</InputLabel>
           <Select
-            value={selectedDonation?.unit || ''}
-            onChange={(e) => onSubmit({ unit: e.target.value })}
+            value={formData.unit || ''}
+            onChange={(e) => handleChange('unit', e.target.value)}
           >
             {Object.entries(translations.donations.units).map(([value, label]) => (
               <MenuItem key={value} value={value}>{label}</MenuItem>
@@ -55,8 +82,8 @@ export const DonationForm: React.FC<DonationFormProps> = ({ open, onClose, onSub
           fullWidth
           multiline
           rows={2}
-          value={selectedDonation?.description || ''}
-          onChange={(e) => onSubmit({ description: e.target.value })}
+          value={formData.description || ''}
+          onChange={(e) => handleChange('description', e.target.value)}
         />
       </DialogContent>
       <DialogActions>

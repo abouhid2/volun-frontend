@@ -29,6 +29,9 @@ export const translations = {
     unauthorized: 'Você precisa estar autenticado para acessar esta página',
     forbidden: 'Você não tem permissão para acessar esta página',
     networkError: 'Erro de conexão. Verifique sua internet e tente novamente',
+    participants: 'Participantes',
+    addParticipant: 'Adicionar Participante',
+    noParticipants: 'Nenhum participante ainda',
   },
   cars: {
     title: 'Carros',

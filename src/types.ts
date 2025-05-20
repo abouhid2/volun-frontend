@@ -29,13 +29,16 @@ export interface Participant {
 }
 
 export interface ParticipationRequest {
-  name: string;
+  name?: string;
+  user_id?: number;
+  status?: string;
+  car_id?: number;
 }
 
 export interface Car {
   id: number;
   event_id: number;
-  driver_id: number;
+  driver_name: string;
   seats: number;
   driver?: {
     id: number;

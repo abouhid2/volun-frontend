@@ -16,7 +16,7 @@ export const CarForm: React.FC<CarFormProps> = ({ open, onClose, onSubmit, selec
 
   useEffect(() => {
     if (selectedCar) {
-      setDriverName(selectedCar.driver?.name || '');
+      setDriverName(selectedCar.driver_name || '');
       setSeats(selectedCar.seats?.toString() || '');
     } else {
       setDriverName('');
@@ -26,7 +26,7 @@ export const CarForm: React.FC<CarFormProps> = ({ open, onClose, onSubmit, selec
 
   const handleSubmit = () => {
     onSubmit({
-      driver: { name: driverName, id: 0 },
+      driver_name: driverName,
       seats: parseInt(seats) || 0
     });
   };
