@@ -67,6 +67,7 @@ export const translations = {
     noCar: 'Nenhum carro',
     assignedTo: 'Atribuído ao carro:',
     removeAll: 'Remover Doações',
+    settings: 'Configurações de Doações',
     types: {
       drinks: 'Bebidas',
       food: 'Comida',

@@ -4,7 +4,7 @@ import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, Di
 import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { Event, Car, Donation, Participant } from '../../types';
-import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats } from '../../services/api';
+import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings } from '../../services/api';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { translations } from '../../translations/pt';
@@ -35,21 +35,24 @@ export const EventDetails: React.FC = () => {
   const [isParticipantDialogOpen, setIsParticipantDialogOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [donationTypes, setDonationTypes] = useState<string[]>(Object.values(translations.donations.types));
-  const [donationUnits, setDonationUnits] = useState<string[]>(Object.values(translations.donations.units));
+  const [donationTypes, setDonationTypes] = useState<string[]>([]);
+  const [donationUnits, setDonationUnits] = useState<string[]>([]);
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
     try {
       setLoading(true);
-      const [eventData, carsData, donationsData] = await Promise.all([
+      const [eventData, carsData, donationsData, settingsData] = await Promise.all([
         getEvent(parseInt(entityId), parseInt(eventId)),
         getCars(parseInt(eventId)),
-        getDonations(parseInt(eventId))
+        getDonations(parseInt(eventId)),
+        getDonationSettings(parseInt(eventId))
       ]);
       setEvent(eventData);
       setCars(carsData);
       setDonations(donationsData);
+      setDonationTypes(settingsData.types);
+      setDonationUnits(settingsData.units);
     } catch (err) {
       setError(translations.events.loadError);
     } finally {
@@ -240,9 +243,15 @@ export const EventDetails: React.FC = () => {
     }
   };
 
-  const handleUpdateDonationSettings = (types: string[], units: string[]) => {
-    setDonationTypes(types);
-    setDonationUnits(units);
+  const handleUpdateDonationSettings = async (types: string[], units: string[]) => {
+    if (!eventId) return;
+    try {
+      await updateDonationSettings(parseInt(eventId), { types, units });
+      setDonationTypes(types);
+      setDonationUnits(units);
+    } catch (err) {
+      console.error('Error updating donation settings:', err);
+    }
   };
 
   if (loading) return <LoadingState message={translations.events.loading} />;

@@ -67,6 +67,6 @@ export interface Donation {
 export interface DonationSettings {
   id: number;
   event_id: number;
-  donation_types: string[];
-  donation_units: string[];
+  types: string[];
+  units: string[];
 }

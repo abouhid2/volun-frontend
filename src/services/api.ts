@@ -1,5 +1,5 @@
 import axiosInstance from './axios.config';
-import { Event, Participant, ParticipationRequest, Entity, Car, Donation } from '../types';
+import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings } from '../types';
 import { API_CONFIG } from '../config/api';
 
 // Entity CRUD operations
@@ -86,4 +86,10 @@ export const deleteParticipant = async (eventId: number, participantId: number):
 
 export const cleanCarSeats = async (eventId: number, carId: number, driverIds: number[]): Promise<void> => {
   await axiosInstance.post(`${API_CONFIG.baseURL}/events/${eventId}/cars/${carId}/clean_seats`, { driver_ids: driverIds });
-}; 
+};
+
+export const getDonationSettings = (eventId: number) => 
+  axiosInstance.get<DonationSettings>(`${API_CONFIG.baseURL}/events/${eventId}/donation_settings`).then(res => res.data);
+
+export const updateDonationSettings = (eventId: number, settings: { types: string[], units: string[] }) => 
+  axiosInstance.patch<DonationSettings>(`${API_CONFIG.baseURL}/events/${eventId}/donation_settings`, settings).then(res => res.data); 

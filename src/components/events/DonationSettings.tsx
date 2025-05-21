@@ -50,9 +50,20 @@ export const DonationSettings: React.FC<DonationSettingsProps> = ({
     onClose();
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent, type: 'type' | 'unit') => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (type === 'type') {
+        handleAddType();
+      } else {
+        handleAddUnit();
+      }
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{translations.donations.title}</DialogTitle>
+      <DialogTitle>{translations.donations.settings}</DialogTitle>
       <DialogContent>
         <Box sx={{ mb: 3 }}>
           <Typography variant="h6" sx={{ mb: 1 }}>{translations.donations.type}</Typography>
@@ -62,6 +73,7 @@ export const DonationSettings: React.FC<DonationSettingsProps> = ({
               size="small"
               value={newType}
               onChange={(e) => setNewType(e.target.value)}
+              onKeyPress={(e) => handleKeyPress(e, 'type')}
               placeholder={translations.donations.type}
             />
             <Button variant="contained" onClick={handleAddType} startIcon={<AddIcon />}>
@@ -90,6 +102,7 @@ export const DonationSettings: React.FC<DonationSettingsProps> = ({
               size="small"
               value={newUnit}
               onChange={(e) => setNewUnit(e.target.value)}
+              onKeyPress={(e) => handleKeyPress(e, 'unit')}
               placeholder={translations.donations.unit}
             />
             <Button variant="contained" onClick={handleAddUnit} startIcon={<AddIcon />}>
