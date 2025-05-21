@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Car } from '../../types';
-import { translations } from '../../translations/pt';
+import { Car } from '../../../types';
+import { translations } from '../../../translations/pt';
 
 interface CarFormProps {
   open: boolean;

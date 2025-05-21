@@ -1,8 +1,8 @@
 import React from 'react';
 import { Paper, Box, Typography, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { Donation, Car } from '../../types';
-import { translations } from '../../translations/pt';
+import { Donation, Car } from '../../../types';
+import { translations } from '../../../translations/pt';
 import { DonationList } from './DonationList';
 
 interface DonationBoxProps {

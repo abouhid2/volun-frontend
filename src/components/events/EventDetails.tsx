@@ -9,16 +9,16 @@ import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { translations } from '../../translations/pt';
 import { EventForm } from './EventForm';
-import { CarForm } from './CarForm';
-import { DonationForm } from './DonationForm';
+import { CarForm } from './cars/CarForm';
+import { DonationForm } from './donations/DonationForm';
 import { EventInfoBox } from './EventInfoBox';
-import { DonationBox } from './DonationBox';
-import { CarBox } from './CarBox';
-import { ParticipationBox } from './ParticipationBox';
-import { ParticipantDialog } from './ParticipantDialog';
+import { DonationBox } from './donations/DonationBox';
+import { CarBox } from './cars/CarBox';
+import { ParticipationBox } from './participants/ParticipationBox';
+import { ParticipantDialog } from './participants/ParticipantDialog';
 import { EventSummary } from './EventSummary';
 import { EventDuplicateDialog } from './EventDuplicateDialog';
-import { CommentsBox } from './CommentsBox';
+import { CommentsBox } from './comments/CommentsBox';
 
 export const EventDetails: React.FC = () => {
   const { entityId, eventId } = useParams<{ entityId: string; eventId: string }>();

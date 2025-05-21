@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, IconButton, Box } from '@mui/material';
 import { Settings as SettingsIcon } from '@mui/icons-material';
-import { Donation, Car } from '../../types';
-import { translations } from '../../translations/pt';
+import { Donation, Car } from '../../../types';
+import { translations } from '../../../translations/pt';
 import { DonationSettings } from './DonationSettings';
 
 interface DonationFormProps {

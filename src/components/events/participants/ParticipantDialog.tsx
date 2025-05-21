@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-import { translations } from '../../translations/pt';
-import { Car, Participant } from '../../types';
+import { translations } from '../../../translations/pt';
+import { Car, Participant } from '../../../types';
 
 interface ParticipantDialogProps {
   open: boolean;

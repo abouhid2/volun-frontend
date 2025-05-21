@@ -1,8 +1,8 @@
 import React from 'react';
 import { Paper, Box, Typography, Button, List, ListItem, ListItemText, IconButton, Chip } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { translations } from '../../translations/pt';
-import { Participant, Car } from '../../types';
+import { translations } from '../../../translations/pt';
+import { Participant, Car } from '../../../types';
 
 interface ParticipationBoxProps {
   participants: Participant[];

@@ -3,7 +3,7 @@ import { Container, Typography, Button, Box, IconButton } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { Event, Entity } from "../../types";
 import { EventForm } from "./EventForm";
-import { CalendarDayCell } from "../../components/CalendarDayCell";
+import { CalendarDayCell } from "./CalendarDayCell";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import { API_CONFIG } from '../../config/api';

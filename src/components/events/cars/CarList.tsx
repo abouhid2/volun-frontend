@@ -1,8 +1,8 @@
 import React from 'react';
 import { Paper, Typography, Box, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon, DirectionsCar as CarIcon } from '@mui/icons-material';
-import { Car, Participant, Donation } from '../../types';
-import { translations } from '../../translations/pt';
+import { Car, Participant, Donation } from '../../../types';
+import { translations } from '../../../translations/pt';
 
 interface CarListProps {
   cars: Car[];

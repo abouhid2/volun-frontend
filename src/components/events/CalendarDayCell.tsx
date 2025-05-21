@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Typography, Menu, MenuItem } from '@mui/material';
 import { format, isSameDay, isSameMonth } from 'date-fns';
-import { Event } from '../types';
-import { eventListStyles } from '../styles/eventList.styles';
-import { translations } from '../translations/pt';
+import { Event } from '../../types';
+import { eventListStyles } from '../../styles/eventList.styles';
+import { translations } from '../../translations/pt';
 import { useNavigate } from 'react-router-dom';
 
 interface CalendarDayCellProps {

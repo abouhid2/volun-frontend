@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-import { participate, unparticipate } from "../services/api";
-import { AuthService } from "../services/auth.service";
+import { participate, unparticipate } from "../../../services/api";
+import { AuthService } from "../../../services/auth.service";
 
 interface ParticipantButtonProps {
   eventId: number;

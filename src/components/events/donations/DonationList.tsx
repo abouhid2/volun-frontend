@@ -1,8 +1,8 @@
 import React from 'react';
 import { Paper, Typography, Box, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, CardGiftcard as GiftIcon } from '@mui/icons-material';
-import { Donation, Car } from '../../types';
-import { translations } from '../../translations/pt';
+import { Donation, Car } from '../../../types';
+import { translations } from '../../../translations/pt';
 
 interface DonationListProps {
   donations: Donation[];

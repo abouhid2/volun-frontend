@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, IconButton, Paper, Avatar } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon, Person as PersonIcon } from '@mui/icons-material';
-import type { Comment } from '../../types';
+import type { Comment } from '../../../types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useAuth } from '../../hooks/useAuth';
-import { translations } from '../../translations/pt';
+import { useAuth } from '../../../hooks/useAuth';
+import { translations } from '../../../translations/pt';
 
 interface CommentsBoxProps {
   comments: Comment[];
