@@ -10,8 +10,15 @@ import { EntityList } from './components/entities/EntityList';
 import { Layout } from './components/Layout';
 import { LanguageProvider } from './context/LanguageContext';
 import { EventDetails } from './components/events/EventDetails';
+import Home from './components/Home';
 
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+  },
+});
 
 const App = () => {
   return (
@@ -19,15 +26,14 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Router>
-            <Layout>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/" element={<EntityList />} />
-                <Route path="/entities/:entityId/events" element={<EventList />} />
-                <Route path="/entities/:entityId/events/:eventId" element={<EventDetails />} />
-              </Routes>
-            </Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/entities" element={<Layout><EntityList /></Layout>} />
+              <Route path="/entities/:entityId/events" element={<Layout><EventList /></Layout>} />
+              <Route path="/entities/:entityId/events/:eventId" element={<Layout><EventDetails /></Layout>} />
+            </Routes>
           </Router>
         </LocalizationProvider>
       </ThemeProvider>

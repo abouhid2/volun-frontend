@@ -1,11 +1,13 @@
 import axios from 'axios';
 import { AuthService } from './auth.service';
+import { API_CONFIG } from '../config/api';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3001/api/v1',
+  baseURL: API_CONFIG.baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 axiosInstance.interceptors.request.use(
