@@ -200,8 +200,8 @@ export const EventList = () => {
   const parsedEntityId = parseInt(entityId);
 
   return (
-    <Box sx={{ ...eventListStyles.container, width: '97vw', minHeight: '100vh', p: 0 }}>
-      <Box sx={eventListStyles.header}>
+    <div style={{ width: '97vw', minHeight: '100vh', padding: 0 }}>
+      <div style={eventListStyles.header}>
         <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
@@ -217,35 +217,33 @@ export const EventList = () => {
             {translations.events.createButton}
           </Button>
         )}
-      </Box>
+      </div>
 
-      <Box sx={eventListStyles.calendarContainer}>
+      <div style={eventListStyles.calendarContainer}>
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
-          <Box sx={eventListStyles.calendarWrapper}>
-            <DateCalendar 
-              value={selectedDate}
-              onChange={handleDateChange}
-              onMonthChange={handleMonthChange}
-              sx={eventListStyles.calendar}
-              dayOfWeekFormatter={(day) => translations.events.weekDays[day.getDay()]}
-              slots={{
-                day: (props) => (
-                  <CalendarDayCell
-                    day={props.day}
-                    events={getEventsForDate(props.day)}
-                    selectedDate={selectedDate}
-                    currentMonth={currentMonth}
-                    onDayClick={handleDayClick}
-                    onEventClick={handleEventClick}
-                    onEventDuplicate={handleEventDuplicate}
-                    entityId={parsedEntityId}
-                  />
-                )
-              }}
-            />
-          </Box>
+          <DateCalendar 
+            value={selectedDate}
+            onChange={handleDateChange}
+            onMonthChange={handleMonthChange}
+            sx={eventListStyles.calendar}
+            dayOfWeekFormatter={(day) => translations.events.weekDays[day.getDay()]}
+            slots={{
+              day: (props) => (
+                <CalendarDayCell
+                  day={props.day}
+                  events={getEventsForDate(props.day)}
+                  selectedDate={selectedDate}
+                  currentMonth={currentMonth}
+                  onDayClick={handleDayClick}
+                  onEventClick={handleEventClick}
+                  onEventDuplicate={handleEventDuplicate}
+                  entityId={parsedEntityId}
+                />
+              )
+            }}
+          />
         </LocalizationProvider>
-      </Box>
+      </div>
 
       <EventForm
         open={isFormOpen}
@@ -273,6 +271,6 @@ export const EventList = () => {
         open={showAuthAlert}
         onClose={() => setShowAuthAlert(false)}
       />
-    </Box>
+    </div>
   );
 };

@@ -29,7 +29,7 @@ export const eventListStyles = {
   },
   calendar: {
     width: '100%',
-    height: '100%',
+    height: '100vh',
     '& .MuiPickersCalendarHeader-root': {
       paddingLeft: 2,
       paddingRight: 2,

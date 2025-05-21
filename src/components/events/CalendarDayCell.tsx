@@ -89,7 +89,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
       >
         {format(day, 'dd')}
       </Typography>
-      <Box sx={eventListStyles.eventContainer}>
+      <div>
         {events.slice(0, 2).map((event) => (
           <Box
             key={event.id}
@@ -110,7 +110,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             {`+${events.length - 2} ${translations.common.more}`}
           </Box>
         )}
-      </Box>
+      </div>
 
       <Menu
         anchorEl={menuAnchorEl}
