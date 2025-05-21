@@ -3,6 +3,8 @@ import { Paper, Typography, Box, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
 import { Car, Participant, Donation } from '../../types';
 import { translations } from '../../translations/pt';
+import { useDrop } from 'react-dnd';
+import { useDrag } from 'react-dnd';
 
 interface CarListProps {
   cars: Car[];
@@ -13,7 +15,94 @@ interface CarListProps {
   participants?: Participant[];
   donations?: Donation[];
   activeTab: number;
+  onDropParticipant: (carId: number, seatIndex: number, participant: Participant) => void;
 }
+
+const Seat = ({
+  carId,
+  seatIndex,
+  participant,
+  isDriver,
+  onDropParticipant,
+  onRemoveParticipant
+}: {
+  carId: number;
+  seatIndex: number;
+  participant?: Participant;
+  isDriver?: boolean;
+  onDropParticipant: (carId: number, seatIndex: number, participant: Participant) => void;
+  onRemoveParticipant: (participantId: number) => void;
+}) => {
+  const [{ isOver }, drop] = useDrop({
+    accept: 'PARTICIPANT',
+    drop: (item: any) => {
+      if (item.participant) {
+        onDropParticipant(carId, seatIndex, item.participant);
+      }
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
+  const [{ isDragging }, drag] = useDrag({
+    type: 'PARTICIPANT',
+    item: participant ? { participant } : {},
+    canDrag: !!participant,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  const ref = React.useRef<HTMLDivElement>(null);
+  drag(drop(ref));
+  if (participant) {
+    return (
+      <Box
+        ref={ref}
+        sx={{
+          p: 1,
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 1,
+          bgcolor: isDriver ? 'primary.light' : 'action.selected',
+          fontWeight: isDriver ? 'bold' : 'normal',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          opacity: isDragging ? 0.5 : 1,
+          outline: isOver ? '2px solid #1976d2' : undefined
+        }}
+      >
+        <span>
+          {participant.name} {isDriver ? `(${translations.cars.driver})` : ''}
+        </span>
+        {!isDriver && (
+          <IconButton 
+            size="small" 
+            onClick={() => onRemoveParticipant(participant.id)}
+            sx={{ ml: 1 }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
+    );
+  }
+  return (
+    <Box
+      ref={ref}
+      sx={{
+        p: 1,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 1,
+        bgcolor: isOver ? 'action.hover' : 'background.paper',
+        outline: isOver ? '2px solid #1976d2' : undefined
+      }}
+    >
+      {`${translations.cars.seat} ${seatIndex + 1}`}
+    </Box>
+  );
+};
 
 export const CarList: React.FC<CarListProps> = ({ 
   cars, 
@@ -23,7 +112,8 @@ export const CarList: React.FC<CarListProps> = ({
   onRemoveDonation,
   participants = [],
   donations = [],
-  activeTab
+  activeTab,
+  onDropParticipant
 }) => {
   const sortedCars = [...cars].sort((a, b) => a.id - b.id);
 
@@ -60,51 +150,17 @@ export const CarList: React.FC<CarListProps> = ({
               {activeTab === 0 ? (
                 Array.from({ length: car.seats }, (_, i) => {
                   const participant = seatsArr[i];
-                  if (participant) {
-                    const isDriver = participant.name === car.driver_name;
-                    return (
-                      <Box
-                        key={i}
-                        sx={{
-                          p: 1,
-                          border: '1px solid',
-                          borderColor: 'divider',
-                          borderRadius: 1,
-                          bgcolor: isDriver ? 'primary.light' : 'action.selected',
-                          fontWeight: isDriver ? 'bold' : 'normal',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <span>
-                          {participant.name} {isDriver ? `(${translations.cars.driver})` : ''}
-                        </span>
-                        {!isDriver && (
-                          <IconButton 
-                            size="small" 
-                            onClick={() => onRemoveParticipant(participant.id)}
-                            sx={{ ml: 1 }}
-                          >
-                            <CloseIcon fontSize="small" />
-                          </IconButton>
-                        )}
-                      </Box>
-                    );
-                  }
+                  const isDriver = participant && participant.name === car.driver_name;
                   return (
-                    <Box
+                    <Seat
                       key={i}
-                      sx={{
-                        p: 1,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        borderRadius: 1,
-                        bgcolor: 'background.paper'
-                      }}
-                    >
-                      {`${translations.cars.seat} ${i + 1}`}
-                    </Box>
+                      carId={car.id}
+                      seatIndex={i}
+                      participant={participant}
+                      isDriver={isDriver}
+                      onDropParticipant={onDropParticipant}
+                      onRemoveParticipant={onRemoveParticipant}
+                    />
                   );
                 })
               ) : (

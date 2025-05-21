@@ -241,10 +241,10 @@ export const EventDetails: React.FC = () => {
     fetchData();
   };
 
-  const handleRemoveParticipant = async (participantId: number) => {
+  const handleRemoveParticipant = async (participant: Participant) => {
     if (!eventId) return;
     try {
-      await updateParticipant(parseInt(eventId), participantId, { car_id: undefined });
+      await updateParticipant(parseInt(eventId), participant.id, { car_id: undefined });
       fetchParticipants();
     } catch (err) {
       console.error('Error removing participant from car:', err);
@@ -283,6 +283,14 @@ export const EventDetails: React.FC = () => {
       navigate(`/entities/${entityId}/events/${duplicatedEvent.id}`);
     } catch (err) {
       console.error('Error duplicating event:', err);
+    }
+  };
+
+  const handleDropParticipant = async (carId: number, seatIndex: number, participant: Participant) => {
+    if (!eventId) return;
+    if (participant.car_id !== carId) {
+      await updateParticipant(parseInt(eventId), participant.id, { car_id: carId });
+      fetchParticipants();
     }
   };
 
@@ -353,6 +361,7 @@ export const EventDetails: React.FC = () => {
               participants={participants}
               donations={donations}
               activeTab={activeTab}
+              onDropParticipant={handleDropParticipant}
             />
           </Box>
         </Box>

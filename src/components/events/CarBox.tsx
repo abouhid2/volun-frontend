@@ -15,6 +15,7 @@ interface CarBoxProps {
   participants?: Participant[];
   donations?: Donation[];
   activeTab: number;
+  onDropParticipant?: (carId: number, seatIndex: number, participant: Participant) => void;
 }
 
 export const CarBox: React.FC<CarBoxProps> = ({ 
@@ -26,7 +27,8 @@ export const CarBox: React.FC<CarBoxProps> = ({
   onRemoveDonation,
   participants = [],
   donations = [],
-  activeTab
+  activeTab,
+  onDropParticipant
 }) => {
   return (
     <Paper sx={{ p: 3, height: '100%' }}>
@@ -45,6 +47,11 @@ export const CarBox: React.FC<CarBoxProps> = ({
         participants={participants}
         donations={donations}
         activeTab={activeTab}
+        onDropParticipant={(carId, seatIndex, participant) => {
+          if (typeof onDropParticipant === 'function') {
+            onDropParticipant(carId, seatIndex, participant);
+          }
+        }}
       />
     </Paper>
   );

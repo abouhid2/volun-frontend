@@ -10,6 +10,8 @@ import { EntityList } from './components/entities/EntityList';
 import { Layout } from './components/Layout';
 import { LanguageProvider } from './context/LanguageContext';
 import { EventDetails } from './components/events/EventDetails';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const theme = createTheme();
 
@@ -18,17 +20,19 @@ const App = () => {
     <LanguageProvider>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <Router>
-            <Layout>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/" element={<EntityList />} />
-                <Route path="/entities/:entityId/events" element={<EventList />} />
-                <Route path="/entities/:entityId/events/:eventId" element={<EventDetails />} />
-              </Routes>
-            </Layout>
-          </Router>
+          <DndProvider backend={HTML5Backend}>
+            <Router>
+              <Layout>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/" element={<EntityList />} />
+                  <Route path="/entities/:entityId/events" element={<EventList />} />
+                  <Route path="/entities/:entityId/events/:eventId" element={<EventDetails />} />
+                </Routes>
+              </Layout>
+            </Router>
+          </DndProvider>
         </LocalizationProvider>
       </ThemeProvider>
     </LanguageProvider>
