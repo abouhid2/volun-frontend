@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { Entity } from '../../types';
 import { createEntity, updateEntity } from '../../services/api';
+import { translations } from '../../translations/pt';
 
 interface EntityFormProps {
   open: boolean;
@@ -87,45 +88,45 @@ export const EntityForm: React.FC<EntityFormProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{initialData ? 'Edit Organization' : 'Create New Organization'}</DialogTitle>
+      <DialogTitle>{initialData ? translations.common.edit : translations.common.create}</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
-              label="Name"
+              label={translations.forms.organization.title}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
             <TextField
-              label="Description"
+              label={translations.forms.organization.description}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               multiline
               rows={4}
             />
             <TextField
-              label="Logo URL"
+              label={translations.forms.organization.logo}
               value={logo}
               onChange={(e) => setLogo(e.target.value)}
             />
             <TextField
-              label="Website"
+              label={translations.forms.organization.website}
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
             />
             <TextField
-              label="Address"
+              label={translations.forms.organization.address}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
             <TextField
-              label="Phone"
+              label={translations.forms.organization.phone}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
             <TextField
-              label="Email"
+              label={translations.forms.organization.email}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -133,9 +134,9 @@ export const EntityForm: React.FC<EntityFormProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{translations.common.cancel}</Button>
           <Button type="submit" variant="contained" disabled={loading}>
-            {initialData ? 'Update' : 'Create'}
+            {initialData ? translations.common.save : translations.common.create}
           </Button>
         </DialogActions>
       </form>

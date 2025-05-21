@@ -44,6 +44,11 @@ export const translations = {
     keepParticipants: 'Manter Participantes',
     keepCars: 'Manter Carros',
     keepDonations: 'Manter Doações',
+    createError: 'Erro ao criar evento. Por favor, tente novamente.',
+    updateError: 'Erro ao atualizar evento. Por favor, tente novamente.',
+    deleteError: 'Erro ao excluir evento. Por favor, tente novamente.',
+    duplicateError: 'Erro ao duplicar evento. Por favor, tente novamente.',
+    participantError: 'Erro ao gerenciar participante. Por favor, tente novamente.'
   },
   cars: {
     title: 'Carros',
@@ -59,7 +64,11 @@ export const translations = {
     randomizeOrder: 'Preencher carros (cronológico)',
     randomizeFull: 'Preencher carros',
     removeBackSeats: 'Remover caronas',
-    noCar: 'Nenhum carro'
+    noCar: 'Nenhum carro',
+    createError: 'Erro ao criar carro. Por favor, tente novamente.',
+    updateError: 'Erro ao atualizar carro. Por favor, tente novamente.',
+    deleteError: 'Erro ao excluir carro. Por favor, tente novamente.',
+    cleanError: 'Erro ao limpar assentos. Por favor, tente novamente.'
   },
   donations: {
     title: 'Doações',
@@ -73,6 +82,10 @@ export const translations = {
     assignedTo: 'Atribuído ao carro:',
     removeAll: 'Remover Doações',
     settings: 'Configurações de Doações',
+    createError: 'Erro ao criar doação. Por favor, tente novamente.',
+    updateError: 'Erro ao atualizar doação. Por favor, tente novamente.',
+    deleteError: 'Erro ao excluir doação. Por favor, tente novamente.',
+    settingsError: 'Erro ao gerenciar configurações. Por favor, tente novamente.',
     types: {
       drinks: 'Bebidas',
       food: 'Comida',

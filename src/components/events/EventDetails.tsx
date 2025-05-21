@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Paper } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { Event, Car, Donation, Participant } from '../../types';
+import { Event, Car, Participant, Donation } from '../../types';
 import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings, duplicateEvent } from '../../services/api';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';

@@ -9,11 +9,12 @@ import {
   DialogActions,
 } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import { createEvent, updateEvent } from "../../services/api";
 import { useParams } from "react-router-dom";
 import { Event } from "../../types";
+import { EventFormData } from "../../types/events";
 import { isSameMonth } from "date-fns";
 import { translations } from '../../translations/pt';
+import { useEventManagement } from "../../hooks/useEventManagement";
 
 interface EventFormProps {
   open: boolean;
@@ -35,152 +36,121 @@ export const EventForm: React.FC<EventFormProps> = ({
   onDelete
 }) => {
   const { entityId } = useParams<{ entityId: string }>();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState<Date | null>(null);
-  const [time, setTime] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<EventFormData>({
+    title: "",
+    description: "",
+    location: "",
+    date: new Date(),
+    entityId: parseInt(entityId || "0")
+  });
+  const { loading, handleCreateEvent, handleUpdateEvent } = useEventManagement(parseInt(entityId || "0"));
 
   useEffect(() => {
     if (initialData) {
-      setTitle(initialData.title);
-      setDescription(initialData.description);
-      setLocation(initialData.location);
-      const eventDate = new Date(initialData.date);
-      setDate(eventDate);
-      setTime(eventDate);
+      setFormData({
+        title: initialData.title,
+        description: initialData.description,
+        location: initialData.location,
+        date: new Date(initialData.date),
+        entityId: initialData.entityId
+      });
     } else if (defaultDate) {
-      setDate(defaultDate);
-      setTime(defaultDate);
+      setFormData(prev => ({
+        ...prev,
+        date: defaultDate
+      }));
     }
   }, [initialData, defaultDate]);
 
-  useEffect(() => {
-    if (!initialData && defaultDate && !date) {
-      setDate(defaultDate);
-    }
-  }, [open]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !entityId || !time) return;
+    if (!formData.date || !entityId) return;
 
-    try {
-      setLoading(true);
-      const eventData = {
-        title,
-        description,
-        date: (() => {
-          const d = new Date(date);
-          d.setHours(time.getHours());
-          d.setMinutes(time.getMinutes());
-          d.setSeconds(0);
-          d.setMilliseconds(0);
-          return d.toISOString();
-        })(),
-        location,
-        entityId: parseInt(entityId)
-      };
+    const success = initialData
+      ? await handleUpdateEvent(initialData.id, formData)
+      : await handleCreateEvent(formData);
 
-      if (initialData) {
-        await updateEvent(parseInt(entityId), initialData.id, eventData);
-      } else {
-        await createEvent(eventData);
-      }
+    if (success) {
       onEventCreated();
       onClose();
       resetForm();
-    } catch (error) {
-      console.error("Error saving event:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setLocation("");
-    setDate(null);
-    setTime(null);
+    setFormData({
+      title: "",
+      description: "",
+      location: "",
+      date: new Date(),
+      entityId: parseInt(entityId || "0")
+    });
   };
 
   const handleDateChange = (newDate: Date | null) => {
     if (newDate && isSameMonth(newDate, currentMonth)) {
-      setDate(newDate);
-      if (time) {
-        const updated = new Date(newDate);
-        updated.setHours(time.getHours());
-        updated.setMinutes(time.getMinutes());
-        setTime(updated);
-      }
+      setFormData(prev => ({
+        ...prev,
+        date: newDate
+      }));
     }
   };
 
   const handleTimeChange = (newTime: Date | null) => {
-    if (newTime && date) {
-      const updated = new Date(date);
+    if (newTime && formData.date) {
+      const updated = new Date(formData.date);
       updated.setHours(newTime.getHours());
       updated.setMinutes(newTime.getMinutes());
-      setTime(updated);
-    } else {
-      setTime(newTime);
+      setFormData(prev => ({
+        ...prev,
+        date: updated
+      }));
     }
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{initialData ? translations.common.edit + ' ' + translations.events.title : translations.common.create + ' ' + translations.events.title}</DialogTitle>
+      <DialogTitle>
+        {initialData ? translations.common.edit : translations.common.create} {translations.events.title}
+      </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              minWidth: 400,
-            }}
-          >
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 400 }}>
             <TextField
               label={translations.forms.event.title}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               required
             />
             <TextField
               label={translations.forms.event.description}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               multiline
               rows={4}
             />
             <TextField
               label={translations.forms.event.location}
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={formData.location}
+              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
             />
             <DatePicker
               label={translations.forms.event.date}
-              value={date}
+              value={formData.date}
               onChange={handleDateChange}
               format="dd/MM/yyyy"
               slotProps={{
-                textField: {
-                  required: true
-                }
+                textField: { required: true }
               }}
               shouldDisableDate={(date) => !isSameMonth(date, currentMonth)}
             />
             <TimePicker
-              label={translations.forms.event.time || 'Horário'}
-              value={time}
+              label={translations.forms.event.time}
+              value={formData.date}
               onChange={handleTimeChange}
               format="HH:mm"
               slotProps={{
-                textField: {
-                  required: true
-                }
+                textField: { required: true }
               }}
             />
           </Box>
@@ -192,7 +162,11 @@ export const EventForm: React.FC<EventFormProps> = ({
             </Button>
           )}
           <Button onClick={onClose}>{translations.common.cancel}</Button>
-          <Button type="submit" variant="contained" disabled={loading || !date || !time}>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            disabled={loading || !formData.date}
+          >
             {initialData ? translations.common.save : translations.common.create}
           </Button>
         </DialogActions>
