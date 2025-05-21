@@ -10,7 +10,8 @@ export const translations = {
     authRequired: 'Você precisa estar logado para realizar esta ação',
     confirmDelete: 'Tem certeza que deseja excluir?',
     more: 'mais',
-    viewDetails: 'Ver Detalhes'
+    viewDetails: 'Ver Detalhes',
+    confirm: 'Confirmar',
   },
   organizations: {
     title: 'Organizações',
@@ -38,7 +39,11 @@ export const translations = {
       going: 'Indo',
       not_going: 'Não vai',
       maybe: 'Talvez'
-    }
+    },
+    duplicateTitle: 'Duplicar Evento',
+    keepParticipants: 'Manter Participantes',
+    keepCars: 'Manter Carros',
+    keepDonations: 'Manter Doações',
   },
   cars: {
     title: 'Carros',
@@ -122,5 +127,9 @@ export const translations = {
       location: 'Local',
       time: 'Horário',
     },
+  },
+  entities: {
+    duplicateTitle: 'Duplicar Entidade',
+    duplicateConfirmation: 'Tem certeza que deseja duplicar esta entidade?',
   },
 } as const; 

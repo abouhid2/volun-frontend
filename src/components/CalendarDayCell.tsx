@@ -13,6 +13,7 @@ interface CalendarDayCellProps {
   currentMonth: Date;
   onDayClick: (date: Date) => void;
   onEventClick: (event: Event) => void;
+  onEventDuplicate: (event: Event) => void;
   entityId: number;
 }
 
@@ -23,6 +24,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   currentMonth,
   onDayClick,
   onEventClick,
+  onEventDuplicate,
   entityId
 }) => {
   const navigate = useNavigate();
@@ -52,6 +54,13 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   const handleViewDetails = () => {
     if (selectedEvent && entityId) {
       navigate(`/entities/${entityId}/events/${selectedEvent.id}`);
+    }
+    handleMenuClose();
+  };
+
+  const handleDuplicate = () => {
+    if (selectedEvent) {
+      onEventDuplicate(selectedEvent);
     }
     handleMenuClose();
   };
@@ -113,6 +122,9 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         </MenuItem>
         <MenuItem onClick={handleViewDetails}>
           {translations.common.viewDetails}
+        </MenuItem>
+        <MenuItem onClick={handleDuplicate}>
+          {translations.events.duplicateTitle}
         </MenuItem>
       </Menu>
     </Box>

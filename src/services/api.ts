@@ -18,6 +18,9 @@ export const updateEntity = (id: number, entity: Partial<Omit<Entity, 'id'>>) =>
 export const deleteEntity = (id: number) => 
   axiosInstance.delete(`${API_CONFIG.baseURL}/entities/${id}`).then(res => res.data);
 
+export const duplicateEntity = (id: number) => 
+  axiosInstance.post<Entity>(`${API_CONFIG.baseURL}/entities/${id}/duplicate`).then(res => res.data);
+
 // Event CRUD operations
 export const getEvents = (entityId: number) => 
   axiosInstance.get<Event[]>(`${API_CONFIG.baseURL}/entities/${entityId}/events`).then(res => res.data);
@@ -38,6 +41,21 @@ export const updateEvent = (entityId: number, eventId: number, event: Partial<Om
 
 export const deleteEvent = (entityId: number, eventId: number) => 
   axiosInstance.delete(`${API_CONFIG.baseURL}/entities/${entityId}/events/${eventId}`).then(res => res.data);
+
+export const duplicateEvent = (
+  entityId: number, 
+  eventId: number, 
+  data: { 
+    title: string;
+    description: string;
+    date: string | Date;
+    location: string;
+    keepParticipants: boolean;
+    keepCars: boolean;
+    keepDonations: boolean;
+  }
+) => 
+  axiosInstance.post<Event>(`${API_CONFIG.baseURL}/entities/${entityId}/events/${eventId}/duplicate`, data).then(res => res.data);
 
 export const participate = async (eventId: number, data: ParticipationRequest): Promise<Participant> => {
   const response = await axiosInstance.post(`${API_CONFIG.baseURL}/events/${eventId}/participants`, data);

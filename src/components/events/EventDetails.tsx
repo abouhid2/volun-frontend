@@ -4,7 +4,7 @@ import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, Di
 import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { Event, Car, Donation, Participant } from '../../types';
-import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings } from '../../services/api';
+import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings, duplicateEvent } from '../../services/api';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { translations } from '../../translations/pt';
@@ -17,6 +17,7 @@ import { CarBox } from './CarBox';
 import { ParticipationBox } from './ParticipationBox';
 import { ParticipantDialog } from './ParticipantDialog';
 import { EventSummary } from './EventSummary';
+import { EventDuplicateDialog } from './EventDuplicateDialog';
 
 export const EventDetails: React.FC = () => {
   const { entityId, eventId } = useParams<{ entityId: string; eventId: string }>();
@@ -37,6 +38,7 @@ export const EventDetails: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [donationTypes, setDonationTypes] = useState<string[]>([]);
   const [donationUnits, setDonationUnits] = useState<string[]>([]);
+  const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false);
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
@@ -254,6 +256,30 @@ export const EventDetails: React.FC = () => {
     }
   };
 
+  const handleDuplicate = async (data: {
+    title: string;
+    description: string;
+    date: Date;
+    location: string;
+    keepParticipants: boolean;
+    keepCars: boolean;
+    keepDonations: boolean;
+  }) => {
+    if (!entityId || !eventId) return;
+    try {
+      const duplicatedEvent = await duplicateEvent(parseInt(entityId), parseInt(eventId), {
+        ...data,
+        date: new Date(data.date).toISOString(),
+        keepParticipants: data.keepParticipants,
+        keepCars: data.keepCars,
+        keepDonations: data.keepDonations,
+      });
+      navigate(`/entities/${entityId}/events/${duplicatedEvent.id}`);
+    } catch (err) {
+      console.error('Error duplicating event:', err);
+    }
+  };
+
   if (loading) return <LoadingState message={translations.events.loading} />;
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
   if (!event) return null;
@@ -267,13 +293,20 @@ export const EventDetails: React.FC = () => {
         <Typography variant="h4" component="h1">
           {event.title}
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ ml: 'auto' }}
-          onClick={() => setIsFormOpen(true)}
-        >
-          {translations.common.edit}
-        </Button>
+        <Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setIsDuplicateDialogOpen(true)}
+          >
+            {translations.events.duplicateTitle}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setIsFormOpen(true)}
+          >
+            {translations.common.edit}
+          </Button>
+        </Box>
       </Box>
 
       <EventSummary 
@@ -425,6 +458,12 @@ export const EventDetails: React.FC = () => {
         cars={cars}
         participants={participants}
         onRemoveParticipant={handleRemoveParticipant}
+      />
+      <EventDuplicateDialog
+        open={isDuplicateDialogOpen}
+        onClose={() => setIsDuplicateDialogOpen(false)}
+        onConfirm={handleDuplicate}
+        event={event}
       />
     </Container>
   );

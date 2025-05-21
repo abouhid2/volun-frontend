@@ -7,7 +7,7 @@ import { CalendarDayCell } from "../../components/CalendarDayCell";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import { API_CONFIG } from '../../config/api';
-import { deleteEvent } from '../../services/api';
+import { deleteEvent, duplicateEvent } from '../../services/api';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -19,6 +19,7 @@ import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { AuthRequiredAlert } from '../common/AuthRequiredAlert';
 import { translations } from '../../translations/pt';
+import { EventDuplicateDialog } from './EventDuplicateDialog';
 
 interface ErrorResponse {
   error: string;
@@ -39,6 +40,8 @@ export const EventList = () => {
   const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(new Date()));
   const navigate = useNavigate();
   const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
+  const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false);
+  const [eventToDuplicate, setEventToDuplicate] = useState<Event | null>(null);
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -147,6 +150,39 @@ export const EventList = () => {
     checkAuth(() => setIsFormOpen(true));
   };
 
+  const handleEventDuplicate = (event: Event) => {
+    checkAuth(() => {
+      setEventToDuplicate(event);
+      setIsDuplicateDialogOpen(true);
+    });
+  };
+
+  const handleDuplicateConfirm = async (data: {
+    title: string;
+    description: string;
+    date: Date;
+    location: string;
+    keepParticipants: boolean;
+    keepCars: boolean;
+    keepDonations: boolean;
+  }) => {
+    if (!entityId || !eventToDuplicate) return;
+    try {
+      const duplicatedEvent = await duplicateEvent(parseInt(entityId), eventToDuplicate.id, {
+        ...data,
+        date: new Date(data.date).toISOString(),
+        keepParticipants: data.keepParticipants,
+        keepCars: data.keepCars,
+        keepDonations: data.keepDonations,
+      });
+      fetchEvents();
+      setIsDuplicateDialogOpen(false);
+      setEventToDuplicate(null);
+    } catch (err) {
+      console.error('Error duplicating event:', err);
+    }
+  };
+
   if (loading) {
     return <LoadingState message={translations.events.loading} />;
   }
@@ -201,6 +237,7 @@ export const EventList = () => {
                     currentMonth={currentMonth}
                     onDayClick={handleDayClick}
                     onEventClick={handleEventClick}
+                    onEventDuplicate={handleEventDuplicate}
                     entityId={parsedEntityId}
                   />
                 )
@@ -219,6 +256,18 @@ export const EventList = () => {
         currentMonth={currentMonth}
         onDelete={selectedEvent ? () => handleDelete(selectedEvent.id) : undefined}
       />
+
+      {eventToDuplicate && (
+        <EventDuplicateDialog
+          open={isDuplicateDialogOpen}
+          onClose={() => {
+            setIsDuplicateDialogOpen(false);
+            setEventToDuplicate(null);
+          }}
+          onConfirm={handleDuplicateConfirm}
+          event={eventToDuplicate}
+        />
+      )}
 
       <AuthRequiredAlert 
         open={showAuthAlert}
