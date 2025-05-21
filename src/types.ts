@@ -70,3 +70,16 @@ export interface DonationSettings {
   types: string[];
   units: string[];
 }
+
+export interface Comment {
+  id: number;
+  event_id: number;
+  user_id: number;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  user: {
+    id: number;
+    name: string;
+  };
+}

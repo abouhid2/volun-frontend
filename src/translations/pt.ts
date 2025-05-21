@@ -48,7 +48,21 @@ export const translations = {
     updateError: 'Erro ao atualizar evento. Por favor, tente novamente.',
     deleteError: 'Erro ao excluir evento. Por favor, tente novamente.',
     duplicateError: 'Erro ao duplicar evento. Por favor, tente novamente.',
-    participantError: 'Erro ao gerenciar participante. Por favor, tente novamente.'
+    participantError: 'Erro ao gerenciar participante. Por favor, tente novamente.',
+    comments: {
+      title: 'Comentários',
+      addComment: 'Adicionar Comentário',
+      anonymous: 'Anônimo',
+      editComment: 'Editar Comentário',
+      deleteComment: 'Excluir Comentário',
+      noComments: 'Nenhum comentário ainda',
+      addPlaceholder: 'Adicione um comentário...',
+      save: 'Salvar',
+      cancel: 'Cancelar',
+      createError: 'Erro ao criar comentário. Por favor, tente novamente.',
+      updateError: 'Erro ao atualizar comentário. Por favor, tente novamente.',
+      deleteError: 'Erro ao excluir comentário. Por favor, tente novamente.'
+    },
   },
   cars: {
     title: 'Carros',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Paper, Typography, Box, IconButton } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon, DirectionsCar as CarIcon } from '@mui/icons-material';
 import { Car, Participant, Donation } from '../../types';
 import { translations } from '../../translations/pt';
 
@@ -40,6 +40,7 @@ export const CarList: React.FC<CarListProps> = ({
           <Paper key={car.id} sx={{ p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CarIcon color="primary" />
                 <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                   {carIndex + 1}.
                 </Typography>

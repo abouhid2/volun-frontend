@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Paper } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Shuffle as ShuffleIcon, Casino as CasinoIcon, Comment as CommentIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { Event, Car, Participant, Donation } from '../../types';
-import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings, duplicateEvent } from '../../services/api';
+import { Event, Car, Participant, Donation, Comment } from '../../types';
+import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings, duplicateEvent, getComments, createComment, updateComment, deleteComment } from '../../services/api';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { translations } from '../../translations/pt';
@@ -18,6 +18,7 @@ import { ParticipationBox } from './ParticipationBox';
 import { ParticipantDialog } from './ParticipantDialog';
 import { EventSummary } from './EventSummary';
 import { EventDuplicateDialog } from './EventDuplicateDialog';
+import { CommentsBox } from './CommentsBox';
 
 export const EventDetails: React.FC = () => {
   const { entityId, eventId } = useParams<{ entityId: string; eventId: string }>();
@@ -39,22 +40,25 @@ export const EventDetails: React.FC = () => {
   const [donationTypes, setDonationTypes] = useState<string[]>([]);
   const [donationUnits, setDonationUnits] = useState<string[]>([]);
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
     try {
       setLoading(true);
-      const [eventData, carsData, donationsData, settingsData] = await Promise.all([
+      const [eventData, carsData, donationsData, settingsData, commentsData] = await Promise.all([
         getEvent(parseInt(entityId), parseInt(eventId)),
         getCars(parseInt(eventId)),
         getDonations(parseInt(eventId)),
-        getDonationSettings(parseInt(eventId))
+        getDonationSettings(parseInt(eventId)),
+        getComments(parseInt(eventId))
       ]);
       setEvent(eventData);
       setCars(carsData);
       setDonations(donationsData);
       setDonationTypes(settingsData.types);
       setDonationUnits(settingsData.units);
+      setComments(commentsData);
     } catch (err) {
       setError(translations.events.loadError);
     } finally {
@@ -184,6 +188,7 @@ export const EventDetails: React.FC = () => {
     const carsWithSeats = cars.map(car => ({
       ...car,
       assigned: participants.filter(p => p.car_id === car.id).length,
+      availableSeats: car.seats - participants.filter(p => p.car_id === car.id).length
     }));
     
     let pool = [...unassigned];
@@ -191,26 +196,27 @@ export const EventDetails: React.FC = () => {
       pool = pool.sort(() => Math.random() - 0.5);
     }
 
-    let carIndex = 0;
     for (const participant of pool) {
-      while (carIndex < carsWithSeats.length) {
-        const car = carsWithSeats[carIndex];
-        if (car.assigned < car.seats) {
-          await updateParticipant(parseInt(eventId), participant.id, { car_id: car.id });
-          car.assigned++;
-          carIndex = (carIndex + 1) % carsWithSeats.length;
-          break;
-        }
-        carIndex = (carIndex + 1) % carsWithSeats.length;
-      }
+      const availableCars = carsWithSeats.filter(car => car.availableSeats > 0);
+      if (availableCars.length === 0) break;
+
+      const carWithMostSeats = availableCars.reduce((prev, current) => 
+        current.availableSeats > prev.availableSeats ? current : prev
+      );
+
+      await updateParticipant(parseInt(eventId), participant.id, { car_id: carWithMostSeats.id });
+      carWithMostSeats.assigned++;
+      carWithMostSeats.availableSeats--;
     }
 
     let donationPool = [...unassignedDonations];
     if (fullyRandom) {
       donationPool = donationPool.sort(() => Math.random() - 0.5);
     }
+
+    const carsWithDonations = carsWithSeats.sort((a, b) => b.assigned - a.assigned);
     let donationIndex = 0;
-    for (const car of cars) {
+    for (const car of carsWithDonations) {
       if (donationIndex < donationPool.length) {
         const donation = donationPool[donationIndex];
         await updateDonation(parseInt(eventId), donation.id, { car_id: car.id });
@@ -283,6 +289,40 @@ export const EventDetails: React.FC = () => {
       navigate(`/entities/${entityId}/events/${duplicatedEvent.id}`);
     } catch (err) {
       console.error('Error duplicating event:', err);
+    }
+  };
+
+  const handleAddComment = async (content: string) => {
+    if (!eventId) return;
+    try {
+      const newComment = await createComment(parseInt(eventId), content);
+      setComments([newComment, ...comments]);
+    } catch (err) {
+      console.error('Error adding comment:', err);
+    }
+  };
+
+  const handleUpdateComment = async (commentId: number, content: string) => {
+    if (!eventId) return;
+    try {
+      const updatedComment = await updateComment(parseInt(eventId), commentId, content);
+      setComments(comments.map(comment => 
+        comment.id === commentId ? updatedComment : comment
+      ));
+    } catch (err) {
+      console.error('Error updating comment:', err);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (!eventId) return;
+    if (window.confirm(translations.common.confirmDelete)) {
+      try {
+        await deleteComment(parseInt(eventId), commentId);
+        setComments(comments.filter(comment => comment.id !== commentId));
+      } catch (err) {
+        console.error('Error deleting comment:', err);
+      }
     }
   };
 
@@ -397,6 +437,7 @@ export const EventDetails: React.FC = () => {
             <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
               <Tab label="Participantes" />
               <Tab label="Doações" />
+              <Tab label="Comentários" />
             </Tabs>
           </Box>
           <Box sx={{ mt: 2 }}>
@@ -422,6 +463,14 @@ export const EventDetails: React.FC = () => {
                 }}
                 onEditDonation={handleEditDonation}
                 onDeleteDonation={handleDeleteDonation}
+              />
+            )}
+            {activeTab === 2 && (
+              <CommentsBox
+                comments={comments}
+                onAddComment={handleAddComment}
+                onUpdateComment={handleUpdateComment}
+                onDeleteComment={handleDeleteComment}
               />
             )}
           </Box>

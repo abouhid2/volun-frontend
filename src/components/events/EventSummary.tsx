@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
+import { DirectionsCar as CarIcon, Person as PersonIcon, CardGiftcard as GiftIcon } from '@mui/icons-material';
 import { Car, Donation, Participant } from '../../types';
 import { translations } from '../../translations/pt';
 
@@ -17,9 +18,12 @@ export const EventSummary: React.FC<EventSummaryProps> = ({ cars, participants, 
   return (
     <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
       <Paper sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        <Typography variant="h6" color="primary">
-          {cars.length}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CarIcon color="primary" />
+          <Typography variant="h6" color="primary">
+            {cars.length}
+          </Typography>
+        </Box>
         <Typography variant="body2" color="text.secondary">
           {translations.cars.title}
         </Typography>
@@ -29,9 +33,12 @@ export const EventSummary: React.FC<EventSummaryProps> = ({ cars, participants, 
       </Paper>
 
       <Paper sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        <Typography variant="h6" color="primary">
-          {participants.length}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <PersonIcon color="primary" />
+          <Typography variant="h6" color="primary">
+            {participants.length}
+          </Typography>
+        </Box>
         <Typography variant="body2" color="text.secondary">
           {translations.events.participants}
         </Typography>
@@ -41,9 +48,12 @@ export const EventSummary: React.FC<EventSummaryProps> = ({ cars, participants, 
       </Paper>
 
       <Paper sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        <Typography variant="h6" color="primary">
-          {donations.length}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <GiftIcon color="primary" />
+          <Typography variant="h6" color="primary">
+            {donations.length}
+          </Typography>
+        </Box>
         <Typography variant="body2" color="text.secondary">
           {translations.donations.title}
         </Typography>

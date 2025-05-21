@@ -1,5 +1,5 @@
 import axiosInstance from './axios.config';
-import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings } from '../types';
+import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings, Comment } from '../types';
 import { API_CONFIG } from '../config/api';
 
 // Entity CRUD operations
@@ -110,4 +110,20 @@ export const getDonationSettings = (eventId: number) =>
   axiosInstance.get<DonationSettings>(`${API_CONFIG.baseURL}/events/${eventId}/donation_settings`).then(res => res.data);
 
 export const updateDonationSettings = (eventId: number, settings: { types: string[], units: string[] }) => 
-  axiosInstance.patch<DonationSettings>(`${API_CONFIG.baseURL}/events/${eventId}/donation_settings`, settings).then(res => res.data); 
+  axiosInstance.patch<DonationSettings>(`${API_CONFIG.baseURL}/events/${eventId}/donation_settings`, settings).then(res => res.data);
+
+export const getComments = (eventId: number) => 
+  axiosInstance.get<Comment[]>(`${API_CONFIG.baseURL}/events/${eventId}/comments`, {
+    params: {
+      include: 'user'
+    }
+  }).then(res => res.data);
+
+export const createComment = (eventId: number, content: string) => 
+  axiosInstance.post<Comment>(`${API_CONFIG.baseURL}/events/${eventId}/comments`, { content }).then(res => res.data);
+
+export const updateComment = (eventId: number, commentId: number, content: string) => 
+  axiosInstance.patch<Comment>(`${API_CONFIG.baseURL}/events/${eventId}/comments/${commentId}`, { content }).then(res => res.data);
+
+export const deleteComment = (eventId: number, commentId: number) => 
+  axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/comments/${commentId}`).then(res => res.data); 
