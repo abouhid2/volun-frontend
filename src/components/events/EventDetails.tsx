@@ -179,7 +179,7 @@ export const EventDetails: React.FC = () => {
 
   const handleRandomizeAssignment = async (fullyRandom = false) => {
     if (!eventId) return;
-    const unassigned = participants.filter(p => !p.car_id);
+    const unassigned = participants.filter(p => !p.car_id && p.status === 'going');
     const unassignedDonations = donations.filter(d => !d.car_id);
     const carsWithSeats = cars.map(car => ({
       ...car,
@@ -190,12 +190,18 @@ export const EventDetails: React.FC = () => {
     if (fullyRandom) {
       pool = pool.sort(() => Math.random() - 0.5);
     }
-    let poolIndex = 0;
-    for (const car of carsWithSeats) {
-      for (let seat = car.assigned; seat < car.seats && poolIndex < pool.length; seat++) {
-        const participant = pool[poolIndex];
-        await updateParticipant(parseInt(eventId), participant.id, { car_id: car.id });
-        poolIndex++;
+
+    let carIndex = 0;
+    for (const participant of pool) {
+      while (carIndex < carsWithSeats.length) {
+        const car = carsWithSeats[carIndex];
+        if (car.assigned < car.seats) {
+          await updateParticipant(parseInt(eventId), participant.id, { car_id: car.id });
+          car.assigned++;
+          carIndex = (carIndex + 1) % carsWithSeats.length;
+          break;
+        }
+        carIndex = (carIndex + 1) % carsWithSeats.length;
       }
     }
 
