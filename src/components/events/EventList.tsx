@@ -200,7 +200,26 @@ export const EventList = () => {
   const parsedEntityId = parseInt(entityId);
 
   return (
-    <div style={{ width: '97vw', minHeight: '100vh', padding: 0 }}>
+    <Box sx={{ 
+      width: '100%', 
+      minHeight: '100vh', 
+      padding: 0,
+      overflowX: 'auto',
+      '&::-webkit-scrollbar': {
+        height: '8px'
+      },
+      '&::-webkit-scrollbar-track': {
+        background: '#f1f1f1',
+        borderRadius: '4px'
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: '#888',
+        borderRadius: '4px',
+        '&:hover': {
+          background: '#555'
+        }
+      }
+    }}>
       <div style={eventListStyles.header}>
         <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
@@ -271,6 +290,6 @@ export const EventList = () => {
         open={showAuthAlert}
         onClose={() => setShowAuthAlert(false)}
       />
-    </div>
+    </Box>
   );
 };

@@ -7,7 +7,8 @@ export const eventListStyles = {
   header: {
     display: 'flex',
     alignItems: 'center',
-    mb: 4
+    mb: 4,
+    minWidth: '800px'
   },
   createButton: {
     ml: 'auto',
@@ -18,7 +19,23 @@ export const eventListStyles = {
   },
   calendarContainer: {
     display: 'flex',
-    gap: 4
+    gap: 4,
+    minWidth: '800px',
+    overflowX: 'auto',
+    '&::-webkit-scrollbar': {
+      height: '8px'
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#f1f1f1',
+      borderRadius: '4px'
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: '#888',
+      borderRadius: '4px',
+      '&:hover': {
+        background: '#555'
+      }
+    }
   },
   calendarWrapper: {
     flex: 1,
