@@ -25,9 +25,11 @@ export const CarList: React.FC<CarListProps> = ({
   donations = [],
   activeTab
 }) => {
+  const sortedCars = [...cars].sort((a, b) => a.id - b.id);
+
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-      {cars.map((car) => {
+      {sortedCars.map((car, carIndex) => {
         const carParticipants = participants.filter(p => p.car_id === car.id);
         const carDonations = donations.filter(d => d.car_id === car.id);
         const driver = carParticipants.find(p => p.name === car.driver_name);
@@ -37,9 +39,14 @@ export const CarList: React.FC<CarListProps> = ({
         return (
           <Paper key={car.id} sx={{ p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-              <Typography variant="subtitle1">
-                {car.driver_name || translations.cars.unknownDriver}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                  {carIndex + 1}.
+                </Typography>
+                <Typography variant="subtitle1">
+                  {car.driver_name || translations.cars.unknownDriver}
+                </Typography>
+              </Box>
               <Box>
                 <IconButton size="small" onClick={() => onEditCar(car)}>
                   <EditIcon />
