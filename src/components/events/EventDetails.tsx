@@ -19,6 +19,7 @@ import { ParticipantDialog } from './participants/ParticipantDialog';
 import { EventSummary } from './EventSummary';
 import { EventDuplicateDialog } from './EventDuplicateDialog';
 import { CommentsBox } from './comments/CommentsBox';
+import { useAuth } from '../../hooks/useAuth';
 
 export const EventDetails: React.FC = () => {
   const { entityId, eventId } = useParams<{ entityId: string; eventId: string }>();
@@ -41,6 +42,7 @@ export const EventDetails: React.FC = () => {
   const [donationUnits, setDonationUnits] = useState<string[]>([]);
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
+  const { user } = useAuth();
 
   const fetchData = async () => {
     if (!entityId || !eventId) return;
@@ -331,39 +333,53 @@ export const EventDetails: React.FC = () => {
   if (!event) return null;
 
   return (
-    <Container sx={{ py: 4, width: '100%', maxWidth: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+    <Container sx={{ py: 4, width: "100%", maxWidth: "100%" }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" component="h1">
           {event.title}
         </Typography>
-        <Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={() => setIsDuplicateDialogOpen(true)}
-          >
-            {translations.events.duplicateTitle}
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setIsFormOpen(true)}
-          >
-            {translations.common.edit}
-          </Button>
+        <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
+          {user?.id === event?.entity?.id && (
+            <Button
+              variant="outlined"
+              onClick={() => setIsDuplicateDialogOpen(true)}
+            >
+              {translations.events.duplicateTitle}
+            </Button>
+          )}
+          {user?.id === event?.entity?.id && (
+            <Button variant="contained" onClick={() => setIsFormOpen(true)}>
+              {translations.common.edit}
+            </Button>
+          )}
         </Box>
       </Box>
 
-      <EventSummary 
+      <EventSummary
         cars={cars}
         participants={participants}
         donations={donations}
       />
 
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, alignItems: 'stretch' }}>
-        <Box sx={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 3,
+          alignItems: "stretch",
+        }}
+      >
+        <Box sx={{ flex: 2, display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 3,
+            }}
+          >
             <Box sx={{ flex: 1 }}>
               <EventInfoBox
                 date={event.date}
@@ -396,8 +412,15 @@ export const EventDetails: React.FC = () => {
             />
           </Box>
         </Box>
-        <Box sx={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Box
+          sx={{
+            flex: 1,
+            minWidth: 280,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
             {activeTab === 0 && (
               <>
                 {/* <Button
@@ -433,8 +456,11 @@ export const EventDetails: React.FC = () => {
               </Button>
             )}
           </Box>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, newValue) => setActiveTab(newValue)}
+            >
               <Tab label="Participantes" />
               <Tab label="Doações" />
               <Tab label="Comentários" />

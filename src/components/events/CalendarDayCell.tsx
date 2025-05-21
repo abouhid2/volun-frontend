@@ -5,6 +5,7 @@ import { Event } from '../../types';
 import { eventListStyles } from '../../styles/eventList.styles';
 import { translations } from '../../translations/pt';
 import { useNavigate } from 'react-router-dom';
+import { AuthService } from '../../services/auth.service';
 
 interface CalendarDayCellProps {
   day: Date;
@@ -32,6 +33,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const isToday = isSameDay(day, new Date());
   const isCurrentMonth = isSameMonth(day, currentMonth);
+  const currentUser = AuthService.getCurrentUser();
 
   const handleEventClick = (event: React.MouseEvent<HTMLElement>, eventData: Event) => {
     event.stopPropagation();
@@ -65,29 +67,31 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     handleMenuClose();
   };
 
+  const isOwner = currentUser?.id === selectedEvent?.entity?.id;
+
   return (
     <Box
       onClick={() => isCurrentMonth && onDayClick(day)}
       sx={{
         ...eventListStyles.dayCell,
-        cursor: isCurrentMonth ? 'pointer' : 'default',
-        bgcolor: isToday ? '#e8f0fe' : 'transparent',
+        cursor: isCurrentMonth ? "pointer" : "default",
+        bgcolor: isToday ? "#e8f0fe" : "transparent",
         opacity: isCurrentMonth ? 1 : 0.5,
-        '&:hover': {
-          bgcolor: isCurrentMonth ? '#f8f9fa' : 'transparent'
-        }
+        "&:hover": {
+          bgcolor: isCurrentMonth ? "#f8f9fa" : "transparent",
+        },
       }}
       role="gridcell"
       aria-selected={isToday}
     >
-      <Typography 
-        sx={{ 
+      <Typography
+        sx={{
           ...eventListStyles.dayNumber,
-          color: isToday ? '#1a73e8' : 'inherit',
+          color: isToday ? "#1a73e8" : "inherit",
           fontWeight: isToday ? 500 : 400,
         }}
       >
-        {format(day, 'dd')}
+        {format(day, "dd")}
       </Typography>
       <div>
         {events.slice(0, 2).map((event) => (
@@ -101,10 +105,15 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         ))}
         {events.length > 2 && (
           <Box
-            sx={{ ...eventListStyles.eventItem, cursor: 'pointer', color: '#1976d2', fontWeight: 500 }}
-            onClick={e => {
+            sx={{
+              ...eventListStyles.eventItem,
+              cursor: "pointer",
+              color: "#1976d2",
+              fontWeight: 500,
+            }}
+            onClick={(e) => {
               e.stopPropagation();
-              console.log('Show all events for day', day, events);
+              console.log("Show all events for day", day, events);
             }}
           >
             {`+${events.length - 2} ${translations.common.more}`}
@@ -112,20 +121,22 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         )}
       </div>
 
-      <Menu
-        anchorEl={menuAnchorEl}
-        open={Boolean(menuAnchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleEdit}>
-          {translations.common.edit}
-        </MenuItem>
+        <Menu
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
+          onClose={handleMenuClose}
+        >
         <MenuItem onClick={handleViewDetails}>
           {translations.common.viewDetails}
         </MenuItem>
-        <MenuItem onClick={handleDuplicate}>
-          {translations.events.duplicateTitle}
-        </MenuItem>
+        {isOwner && (
+          <MenuItem onClick={handleEdit}>{translations.common.edit}</MenuItem>
+        )}
+        {isOwner && (
+          <MenuItem onClick={handleDuplicate}>
+            {translations.events.duplicateTitle}
+          </MenuItem>
+        )}
       </Menu>
     </Box>
   );

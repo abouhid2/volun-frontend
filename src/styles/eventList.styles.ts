@@ -97,7 +97,7 @@ export const eventListStyles = {
   },
   dayCell: {
     height: '120px',
-    width: '100%',
+    width: '120px',
     p: 1,
     position: 'relative',
     display: 'flex',
