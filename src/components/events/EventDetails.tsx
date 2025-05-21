@@ -306,7 +306,14 @@ export const EventDetails: React.FC = () => {
               }}
               onDeleteCar={handleDeleteCar}
               onRemoveParticipant={handleRemoveParticipant}
+              onRemoveDonation={(donationId) => {
+                if (!eventId) return;
+                updateDonation(parseInt(eventId), donationId, { car_id: null });
+                fetchData();
+              }}
               participants={participants}
+              donations={donations}
+              activeTab={activeTab}
             />
           </Box>
         </Box>

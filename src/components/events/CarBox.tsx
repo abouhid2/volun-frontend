@@ -1,7 +1,7 @@
 import React from 'react';
 import { Paper, Box, Typography, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { Car, Participant } from '../../types';
+import { Car, Participant, Donation } from '../../types';
 import { translations } from '../../translations/pt';
 import { CarList } from './CarList';
 
@@ -11,7 +11,10 @@ interface CarBoxProps {
   onEditCar: (car: Car) => void;
   onDeleteCar: (carId: number) => void;
   onRemoveParticipant: (participantId: number) => void;
+  onRemoveDonation: (donationId: number) => void;
   participants?: Participant[];
+  donations?: Donation[];
+  activeTab: number;
 }
 
 export const CarBox: React.FC<CarBoxProps> = ({ 
@@ -20,7 +23,10 @@ export const CarBox: React.FC<CarBoxProps> = ({
   onEditCar, 
   onDeleteCar, 
   onRemoveParticipant,
-  participants = [] 
+  onRemoveDonation,
+  participants = [],
+  donations = [],
+  activeTab
 }) => {
   return (
     <Paper sx={{ p: 3, height: '100%' }}>
@@ -35,7 +41,10 @@ export const CarBox: React.FC<CarBoxProps> = ({
         onEditCar={onEditCar}
         onDeleteCar={onDeleteCar}
         onRemoveParticipant={onRemoveParticipant}
+        onRemoveDonation={onRemoveDonation}
         participants={participants}
+        donations={donations}
+        activeTab={activeTab}
       />
     </Paper>
   );
