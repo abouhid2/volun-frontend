@@ -342,7 +342,7 @@ export const EventDetails: React.FC = () => {
           {event.title}
         </Typography>
         <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
-          {user?.id === event?.entity?.id && (
+          {user?.id === event?.user_id && (
             <Button
               variant="outlined"
               onClick={() => setIsDuplicateDialogOpen(true)}
@@ -350,7 +350,7 @@ export const EventDetails: React.FC = () => {
               {translations.events.duplicateTitle}
             </Button>
           )}
-          {user?.id === event?.entity?.id && (
+          {user?.id === event?.user_id && (
             <Button variant="contained" onClick={() => setIsFormOpen(true)}>
               {translations.common.edit}
             </Button>
