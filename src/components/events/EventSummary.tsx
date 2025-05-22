@@ -43,7 +43,7 @@ export const EventSummary: React.FC<EventSummaryProps> = ({ cars, participants, 
           {translations.events.participants}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          {goingParticipants} {translations.events.status.going}
+          {goingParticipants} {translations.events.status.total_going}
         </Typography>
       </Paper>
 
