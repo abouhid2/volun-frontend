@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, IconButton } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
-import { Entity } from '../../types';
 import { EntityDuplicateDialog } from './EntityDuplicateDialog';
 import { duplicateEntity } from '../../services/api';
 import { translations } from '../../translations/pt';
+import { EntityType as Entity } from '../../types';
 
 export const EntityDetails: React.FC = () => {
   const { entityId } = useParams<{ entityId: string }>();

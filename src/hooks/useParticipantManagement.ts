@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Participant, ParticipantFormData } from '../types/events';
+import { Participant, ParticipantFormData } from '../types';
 import { participate, updateParticipant, deleteParticipant } from '../services/api';
 import { translations } from '../translations/pt';
 

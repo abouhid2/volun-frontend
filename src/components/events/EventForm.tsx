@@ -10,8 +10,7 @@ import {
 } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { useParams } from "react-router-dom";
-import { Event } from "../../types";
-import { EventFormData } from "../../types/events";
+import { Event, EventFormData } from "../../types";
 import { isSameMonth } from "date-fns";
 import { translations } from '../../translations/pt';
 import { useEventManagement } from "../../hooks/useEventManagement";

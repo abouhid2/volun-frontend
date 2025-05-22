@@ -9,7 +9,7 @@ export const getEntities = () =>
 export const getEntity = (id: number) => 
   axiosInstance.get<Entity>(`${API_CONFIG.baseURL}/entities/${id}`).then(res => res.data);
 
-export const createEntity = (entity: Omit<Entity, 'id'>) => 
+export const createEntity = (entity: Omit<Entity, 'id'> & { user_id: number }) => 
   axiosInstance.post<Entity>(`${API_CONFIG.baseURL}/entities`, entity).then(res => res.data);
 
 export const updateEntity = (id: number, entity: Partial<Omit<Entity, 'id'>>) => 
@@ -32,7 +32,7 @@ export const createEvent = (event: Omit<Event, 'id' | 'participants_count' | 'is
   const { entityId, ...eventData } = event;
   return axiosInstance.post<Event>(`${API_CONFIG.baseURL}/entities/${entityId}/events`, { 
     event: eventData,
-    entity_id: entityId 
+    entityId 
   }).then(res => res.data);
 };
 
@@ -126,4 +126,4 @@ export const updateComment = (eventId: number, commentId: number, content: strin
   axiosInstance.patch<Comment>(`${API_CONFIG.baseURL}/events/${eventId}/comments/${commentId}`, { content }).then(res => res.data);
 
 export const deleteComment = (eventId: number, commentId: number) => 
-  axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/comments/${commentId}`).then(res => res.data); 
+  axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/comments/${commentId}`).then(res => res.data);

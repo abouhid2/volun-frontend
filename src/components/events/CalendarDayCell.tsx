@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Typography, Menu, MenuItem } from '@mui/material';
 import { format, isSameDay, isSameMonth } from 'date-fns';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import GroupIcon from '@mui/icons-material/Group';
 import { Event } from '../../types';
 import { eventListStyles } from '../../styles/eventList.styles';
 import { translations } from '../../translations/pt';
@@ -100,7 +102,15 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             onClick={(e) => handleEventClick(e, event)}
             sx={eventListStyles.eventItem}
           >
-            {event.title}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Typography sx={{ flex: 1 }}>{event.title}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <DirectionsCarIcon sx={{ fontSize: 16 }} />
+                <Typography variant="caption">{event.cars?.length || 0}</Typography>
+                <GroupIcon sx={{ fontSize: 16, ml: 0.5 }} />
+                <Typography variant="caption">{event.participants?.length || 0}</Typography>
+              </Box>
+            </Box>
           </Box>
         ))}
         {events.length > 2 && (

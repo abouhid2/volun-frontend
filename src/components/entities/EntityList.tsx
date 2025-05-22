@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardMedia, Typography, Container, Box, Button, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
-import { Entity } from '../../types';
+import { EntityType as Entity } from '../../types';
 import { API_CONFIG } from '../../config/api';
 import { EntityForm } from './EntityForm';
 import { deleteEntity } from '../../services/api';

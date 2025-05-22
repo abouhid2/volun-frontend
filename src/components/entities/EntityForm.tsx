@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { Entity } from '../../types';
+import { EntityType as Entity } from '../../types';
 import { createEntity, updateEntity } from '../../services/api';
 import { translations } from '../../translations/pt';
 import { AuthService } from '../../services/auth.service';
@@ -64,7 +64,14 @@ export const EntityForm: React.FC<EntityFormProps> = ({
       if (initialData) {
         await updateEntity(initialData.id, entityData);
       } else {
-        await createEntity({...entityData, user_id: AuthService.getCurrentUser()?.id});
+        const currentUser = AuthService.getCurrentUser();
+        if (!currentUser?.id) {
+          throw new Error('User not authenticated');
+        }
+        await createEntity({
+          ...entityData,
+          user_id: currentUser.id
+        });
       }
       
       onSubmitSuccess();

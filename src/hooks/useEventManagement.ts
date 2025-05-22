@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Event, EventFormData, DuplicateEventData } from '../types/events';
+import { Event, EventFormData, DuplicateEventData } from '../types';
 import { createEvent, updateEvent, deleteEvent, duplicateEvent } from '../services/api';
 import { translations } from '../translations/pt';
 import { AuthService } from '../services/auth.service';
@@ -15,7 +15,9 @@ export const useEventManagement = (entityId: number) => {
       const eventData = {
         ...data,
         date: typeof data.date === 'string' ? data.date : data.date.toISOString(),
-        user_id: AuthService.getCurrentUser()?.id
+        user_id: AuthService.getCurrentUser()?.id,
+        cars: [],
+        donations: []
       };
       await createEvent(eventData);
       return true;

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Donation, DonationSettings } from '../types/events';
+import { Donation, DonationSettings } from '../types';
 import { createDonation, updateDonation, deleteDonation, getDonationSettings, updateDonationSettings } from '../services/api';
 import { translations } from '../translations/pt';
 import { useAuth } from './useAuth';
@@ -7,7 +7,7 @@ import { useAuth } from './useAuth';
 export const useDonationManagement = (eventId: number) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [settings, setSettings] = useState<DonationSettings>({ types: [], units: [] });
+  const [settings, setSettings] = useState<DonationSettings>({ id: 0, event_id: eventId, types: [], units: [] });
   const { user } = useAuth();
 
   const fetchSettings = useCallback(async () => {

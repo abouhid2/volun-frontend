@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Car } from '../types/events';
+import { Car } from '../types';
 import { createCar, updateCar, deleteCar, cleanCarSeats } from '../services/api';
 import { translations } from '../translations/pt';
 

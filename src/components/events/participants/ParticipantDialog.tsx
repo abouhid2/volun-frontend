@@ -38,7 +38,7 @@ export const ParticipantDialog: React.FC<ParticipantDialogProps> = ({
     }
   }, [participant]);
 
-  const handleStatusChange = (newStatus: string) => {
+  const handleStatusChange = (newStatus: 'going' | 'not_going' | 'maybe') => {
     setStatus(newStatus);
   };
 
@@ -73,7 +73,7 @@ export const ParticipantDialog: React.FC<ParticipantDialogProps> = ({
           <Select
             value={status}
             label={translations.events.status.title}
-            onChange={e => handleStatusChange(e.target.value)}
+            onChange={e => handleStatusChange(e.target.value as 'going' | 'not_going' | 'maybe')}
           >
             <MenuItem value="going">{translations.events.status.going}</MenuItem>
             <MenuItem value="not_going">{translations.events.status.not_going}</MenuItem>

@@ -7,7 +7,7 @@ import {
   Button,
   Typography,
 } from '@mui/material';
-import { Entity } from '../../types';
+import { EntityType as Entity } from '../../types';
 import { translations } from '../../translations/pt';
 
 interface EntityDuplicateDialogProps {
