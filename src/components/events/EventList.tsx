@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Container, Typography, Button, Box, IconButton } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
-import { Event, Entity } from "../../types";
+import { Event, EntityType as Entity } from "../../types";
 import { EventForm } from "./EventForm";
 import { CalendarDayCell } from "./CalendarDayCell";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';

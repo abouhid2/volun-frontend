@@ -38,7 +38,9 @@ export const translations = {
       title: 'Status',
       going: 'Confirmado',
       not_going: 'Ausente',
-      maybe: 'Talvez'
+      maybe: 'Talvez',
+      total_going: 'Confirmados',
+      total_not_going: 'Ausentes',
     },
     duplicateTitle: 'Duplicar Evento',
     keepParticipants: 'Manter Participantes',

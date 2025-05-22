@@ -1,3 +1,5 @@
+import { Entity } from './entity';
+
 export interface Event {
   id: number;
   title: string;
@@ -54,11 +56,6 @@ export interface Participant {
   status: 'going' | 'not_going' | 'maybe';
   car_id?: number;
   car?: Car;
-}
-
-export interface Entity {
-  id: number;
-  name: string;
 }
 
 export interface EventFormData {

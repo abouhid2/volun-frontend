@@ -1,5 +1,5 @@
 import axiosInstance from './axios.config';
-import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings, Comment } from '../types';
+import { Event, Participant, ParticipationRequest, EntityType as Entity, Car, Donation, DonationSettings, Comment } from '../types';
 import { API_CONFIG } from '../config/api';
 
 // Entity CRUD operations
