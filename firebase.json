@@ -1,10 +1,15 @@
 {
   "hosting": {
     "public": "build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "function": "api" // or proxy to Heroku if you're using a proxy
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }
