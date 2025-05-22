@@ -36,8 +36,8 @@ export const translations = {
     totalParticipants: 'Total de Participantes',
     status: {
       title: 'Status',
-      going: 'Indo',
-      not_going: 'Não vai',
+      going: 'Confirmado',
+      not_going: 'Ausente',
       maybe: 'Talvez'
     },
     duplicateTitle: 'Duplicar Evento',
@@ -120,6 +120,7 @@ export const translations = {
     }
   },
   auth: {
+    home: 'Organizações',
     login: 'Entrar',
     register: 'Registrar',
     logout: 'Sair',

@@ -12,6 +12,7 @@ import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { AuthRequiredAlert } from '../common/AuthRequiredAlert';
 import { translations } from '../../translations/pt';
+import { AuthService } from '../../services/auth.service';
 
 const DEFAULT_LOGO = "https://placehold.co/200x200";
 
@@ -124,7 +125,7 @@ export const EntityList = () => {
                 </Typography>
               </CardContent>
             </Box>
-            {isAuthenticated && (
+            {isAuthenticated && entity.user_id === AuthService.getCurrentUser()?.id && (
               <Box sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: 1 }}>
                 <IconButton size="small" onClick={(e) => handleEdit(e, entity)}>
                   <EditIcon />

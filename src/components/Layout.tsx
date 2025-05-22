@@ -23,7 +23,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, cursor: "pointer" }}
+            onClick={() => navigate("/entities")}
+          >
             Volun
           </Typography>
           {isAuthenticated ? (
@@ -37,10 +42,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Stack>
           ) : (
             <>
-              <Button color="inherit" onClick={() => navigate('/login')}>
+              <Button color="inherit" onClick={() => navigate("/entities")}>
+                {translations.auth.home}
+              </Button>
+              <Button color="inherit" onClick={() => navigate("/login")}>
                 {translations.auth.login}
               </Button>
-              <Button color="inherit" onClick={() => navigate('/register')}>
+              <Button color="inherit" onClick={() => navigate("/register")}>
                 {translations.auth.register}
               </Button>
             </>

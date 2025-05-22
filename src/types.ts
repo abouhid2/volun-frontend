@@ -5,6 +5,7 @@ export interface Entity {
   logo: string;
   website?: string;
   address: string;
+  user_id: number;
   phone: string;
   email: string;
 }
@@ -16,6 +17,7 @@ export interface Event {
   date: string;
   location: string;
   entityId: number;
+  user_id: number;
   entity?: Entity;
   participants_count: number;
   participants: Participant[];

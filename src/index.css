@@ -11,11 +11,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+button,
+a,
+[role="button"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+option {
+  cursor: pointer;
+}
+
 [class$="MuiDateCalendar-root css-1k2e9v1-MuiDateCalendar-root"] {
   height: auto !important;
   max-height: none !important;
   min-height: 0 !important;
 }
+
 [class$="MuiPickersSlideTransition-root MuiDayCalendar-slideTransition css-1n1xn3x-MuiPickersSlideTransition-root-MuiDayCalendar-slideTransition"] {
   height: 100vh !important;
   max-height: none !important;

@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Event, EventFormData, DuplicateEventData } from '../types/events';
 import { createEvent, updateEvent, deleteEvent, duplicateEvent } from '../services/api';
 import { translations } from '../translations/pt';
+import { AuthService } from '../services/auth.service';
 
 export const useEventManagement = (entityId: number) => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,8 @@ export const useEventManagement = (entityId: number) => {
       setError(null);
       const eventData = {
         ...data,
-        date: typeof data.date === 'string' ? data.date : data.date.toISOString()
+        date: typeof data.date === 'string' ? data.date : data.date.toISOString(),
+        user_id: AuthService.getCurrentUser()?.id
       };
       await createEvent(eventData);
       return true;
@@ -31,7 +33,8 @@ export const useEventManagement = (entityId: number) => {
       setError(null);
       const eventData = {
         ...data,
-        date: typeof data.date === 'string' ? data.date : data.date.toISOString()
+        date: typeof data.date === 'string' ? data.date : data.date.toISOString(),
+        userId: AuthService.getCurrentUser()?.id
       };
       await updateEvent(entityId, eventId, eventData);
       return true;
@@ -63,7 +66,8 @@ export const useEventManagement = (entityId: number) => {
       setError(null);
       const eventData = {
         ...data,
-        date: data.date.toISOString()
+        date: data.date.toISOString(),
+        userId: AuthService.getCurrentUser()?.id
       };
       const duplicatedEvent = await duplicateEvent(entityId, eventId, eventData);
       return duplicatedEvent;

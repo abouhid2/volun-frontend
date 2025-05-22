@@ -67,7 +67,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     handleMenuClose();
   };
 
-  const isOwner = currentUser?.id === selectedEvent?.entity?.id;
+  const isOwner = currentUser?.id === selectedEvent?.user_id;
 
   return (
     <Box
