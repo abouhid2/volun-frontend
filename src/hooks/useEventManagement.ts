@@ -17,7 +17,10 @@ export const useEventManagement = (entityId: number) => {
         date: typeof data.date === 'string' ? data.date : data.date.toISOString(),
         user_id: AuthService.getCurrentUser()?.id,
         cars: [],
-        donations: []
+        donations: [],
+        total_participants: 0,
+        total_cars: 0,
+        total_donations: 0
       };
       await createEvent(eventData);
       return true;

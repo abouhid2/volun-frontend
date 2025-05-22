@@ -23,7 +23,11 @@ export const duplicateEntity = (id: number) =>
 
 // Event CRUD operations
 export const getEvents = (entityId: number) => 
-  axiosInstance.get<Event[]>(`${API_CONFIG.baseURL}/entities/${entityId}/events`).then(res => res.data);
+  axiosInstance.get<Event[]>(`${API_CONFIG.baseURL}/entities/${entityId}/events`, {
+    params: {
+      include: ['participants', 'cars']
+    }
+  }).then(res => res.data);
 
 export const getEvent = (entityId: number, eventId: number) => 
   axiosInstance.get<Event>(`${API_CONFIG.baseURL}/entities/${entityId}/events/${eventId}`).then(res => res.data);

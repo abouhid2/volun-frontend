@@ -13,6 +13,9 @@ export interface Event {
   participants: Participant[];
   cars: Car[];
   donations: Donation[];
+  total_participants: number;
+  total_cars: number;
+  total_donations: number;
 }
 
 export interface Car {

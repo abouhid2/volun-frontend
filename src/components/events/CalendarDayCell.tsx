@@ -106,9 +106,9 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
               <Typography sx={{ flex: 1 }}>{event.title}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <DirectionsCarIcon sx={{ fontSize: 16 }} />
-                <Typography variant="caption">{event.cars?.length || 0}</Typography>
+                <Typography variant="caption">{event.total_cars || 0}</Typography>
                 <GroupIcon sx={{ fontSize: 16, ml: 0.5 }} />
-                <Typography variant="caption">{event.participants?.length || 0}</Typography>
+                <Typography variant="caption">{event.total_participants || 0}</Typography>
               </Box>
             </Box>
           </Box>
