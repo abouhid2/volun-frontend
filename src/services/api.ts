@@ -1,5 +1,5 @@
 import axiosInstance from './axios.config';
-import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings, Comment } from '../types';
+import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings, Comment, Inventory, InventoryTransaction, InventoryFormValues, UseStockFormValues } from '../types';
 import { API_CONFIG } from '../config/api';
 
 // Entity CRUD operations
@@ -131,3 +131,32 @@ export const updateComment = (eventId: number, commentId: number, content: strin
 
 export const deleteComment = (eventId: number, commentId: number) => 
   axiosInstance.delete(`${API_CONFIG.baseURL}/events/${eventId}/comments/${commentId}`).then(res => res.data);
+
+// Inventory CRUD operations
+export const getInventories = (entityId: number) => 
+  axiosInstance.get<Inventory[]>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories`).then(res => res.data);
+
+export const getInventory = (entityId: number, inventoryId: number) => 
+  axiosInstance.get<Inventory>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories/${inventoryId}`).then(res => res.data);
+
+export const createInventory = (entityId: number, inventory: InventoryFormValues) => 
+  axiosInstance.post<Inventory>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories`, inventory).then(res => res.data);
+
+export const updateInventory = (entityId: number, inventoryId: number, inventory: Partial<InventoryFormValues>) => 
+  axiosInstance.patch<Inventory>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories/${inventoryId}`, inventory).then(res => res.data);
+
+export const deleteInventory = (entityId: number, inventoryId: number) => 
+  axiosInstance.delete(`${API_CONFIG.baseURL}/entities/${entityId}/inventories/${inventoryId}`).then(res => res.data);
+
+export const consumeStock = (entityId: number, data: UseStockFormValues) => 
+  axiosInstance.post<InventoryTransaction>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories/use_stock`, data).then(res => res.data);
+
+export const addStock = (entityId: number, inventoryId: number, quantity: number, notes?: string) => 
+  axiosInstance.post<InventoryTransaction>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories/${inventoryId}/add_stock`, { quantity, notes }).then(res => res.data);
+
+export const getInventoryTransactions = (entityId: number, inventoryId: number) => 
+  axiosInstance.get<InventoryTransaction[]>(`${API_CONFIG.baseURL}/entities/${entityId}/inventories/${inventoryId}/transactions`, {
+    params: {
+      include: ['user', 'event', 'donation']
+    }
+  }).then(res => res.data);

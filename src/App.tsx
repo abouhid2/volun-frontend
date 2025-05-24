@@ -12,6 +12,9 @@ import { LanguageProvider } from './context/LanguageContext';
 import { EventDetails } from './components/events/EventDetails';
 import Home from './components/Home';
 import { Profile } from './components/Profile';
+import { EntityDetails } from './components/entities/EntityDetails';
+import { InventoryList } from './components/inventory/InventoryList';
+import { InventoryDetails } from './components/inventory/InventoryDetails';
 
 const theme = createTheme({
   palette: {
@@ -33,8 +36,11 @@ const App = () => {
               <Route path="/register" element={<Layout><Register /></Layout>} />
               <Route path="/profile" element={<Layout><Profile /></Layout>} />
               <Route path="/entities" element={<Layout><EntityList /></Layout>} />
+              <Route path="/entities/:entityId" element={<Layout><EntityDetails /></Layout>} />
               <Route path="/entities/:entityId/events" element={<Layout><EventList /></Layout>} />
               <Route path="/entities/:entityId/events/:eventId" element={<Layout><EventDetails /></Layout>} />
+              <Route path="/entities/:entityId/inventory" element={<Layout><InventoryList /></Layout>} />
+              <Route path="/entities/:entityId/inventory/:inventoryId" element={<Layout><InventoryDetails /></Layout>} />
             </Routes>
           </Router>
         </LocalizationProvider>

@@ -4,3 +4,4 @@ globs:
 alwaysApply: true
 ---
 Remember to never add text directly on the components, always add the translation in [pt.ts](mdc:src/translations/pt.ts)
+NEVER user <Grid> from Mui, it always breaks
