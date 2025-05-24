@@ -1,13 +1,8 @@
 import React from 'react';
-import { Box, Typography, Container, styled } from '@mui/material';
+import { Box, Typography, Container } from '@mui/material';
 import { useLanguage } from '../context/LanguageContext';
 import { EntityList } from './entities/EntityList';
-
-const LogoImage = styled('img')(({ theme }) => ({
-  width: '120px',
-  height: '120px',
-  marginBottom: theme.spacing(2),
-}));
+import { Logo } from './common/Logo';
 
 const Home = () => {
   const { translations } = useLanguage();
@@ -25,7 +20,7 @@ const Home = () => {
           pb: 4
         }}
       >
-        <LogoImage src="/volun-logo.png" alt={translations.home.title} />
+        <Logo size="large" sx={{ mb: 2 }} />
         <Typography variant="h3" component="h1" gutterBottom>
           {translations.home.title}
         </Typography>

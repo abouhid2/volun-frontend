@@ -10,7 +10,8 @@ export const Register = () => {
   const [formData, setFormData] = useState<RegisterData>({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    telephone: ''
   });
   const [error, setError] = useState('');
 
@@ -69,6 +70,16 @@ export const Register = () => {
             name="email"
             autoComplete="email"
             value={formData.email}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="telephone"
+            label={translations.auth.telephone}
+            name="telephone"
+            autoComplete="tel"
+            value={formData.telephone}
             onChange={handleChange}
           />
           <TextField

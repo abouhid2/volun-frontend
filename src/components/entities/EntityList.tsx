@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardMedia, Typography, Box, Button, IconButton } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Card, CardContent, CardMedia, Typography, Box, Button, IconButton, Fab, useMediaQuery, useTheme } from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { EntityType as Entity } from '../../types';
 import { API_CONFIG } from '../../config/api';
@@ -25,6 +25,8 @@ export const EntityList = () => {
   const navigate = useNavigate();
   const { translations } = useLanguage();
   const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const fetchEntities = async () => {
     try {
@@ -97,9 +99,15 @@ export const EntityList = () => {
         <Typography variant="h4" component="h2">
           {translations.organizations.title}
         </Typography>
-        <Button variant="contained" onClick={handleCreateClick}>
-          {translations.organizations.createButton}
-        </Button>
+        {!isMobile && (
+          <Button 
+            variant="contained" 
+            onClick={handleCreateClick}
+            startIcon={<AddIcon />}
+          >
+            {translations.common.create}
+          </Button>
+        )}
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2 }}>
@@ -151,6 +159,22 @@ export const EntityList = () => {
         open={showAuthAlert}
         onClose={() => setShowAuthAlert(false)}
       />
+
+      {isMobile && (
+        <Fab 
+          color="primary" 
+          aria-label={translations.common.create}
+          onClick={handleCreateClick}
+          sx={{ 
+            position: 'fixed', 
+            bottom: 16, 
+            right: 16,
+            zIndex: 1000
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
     </>
   );
 }; 

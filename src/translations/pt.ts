@@ -136,6 +136,7 @@ export const translations = {
     email: 'Email',
     password: 'Senha',
     fullName: 'Nome completo',
+    telephone: 'Telefone',
     loginButton: 'Entrar',
     registerButton: 'Registrar',
     noAccount: 'Não tem uma conta?',
@@ -143,7 +144,8 @@ export const translations = {
     signUp: 'Cadastre-se',
     signIn: 'Entre',
     loginError: 'Ocorreu um erro durante o login',
-    registerError: 'Ocorreu um erro durante o registro'
+    registerError: 'Ocorreu um erro durante o registro',
+    loggedAs: 'Logado como'
   },
   forms: {
     organization: {
@@ -167,4 +169,19 @@ export const translations = {
     duplicateTitle: 'Duplicar Entidade',
     duplicateConfirmation: 'Tem certeza que deseja duplicar esta entidade?',
   },
+  profile: {
+    title: 'Meu Perfil',
+    editProfile: 'Editar Perfil',
+    updateSuccess: 'Perfil atualizado com sucesso',
+    updateError: 'Erro ao atualizar perfil',
+    nameLabel: 'Nome',
+    emailLabel: 'Email',
+    telephoneLabel: 'Telefone',
+    currentPasswordLabel: 'Senha Atual',
+    newPasswordLabel: 'Nova Senha',
+    confirmPasswordLabel: 'Confirmar Nova Senha',
+    changePassword: 'Alterar Senha',
+    passwordsDoNotMatch: 'As senhas não coincidem',
+    saveChanges: 'Salvar Alterações'
+  }
 } as const; 

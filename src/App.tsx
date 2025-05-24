@@ -11,6 +11,7 @@ import { Layout } from './components/Layout';
 import { LanguageProvider } from './context/LanguageContext';
 import { EventDetails } from './components/events/EventDetails';
 import Home from './components/Home';
+import { Profile } from './components/Profile';
 
 const theme = createTheme({
   palette: {
@@ -27,9 +28,10 @@ const App = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Router>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Layout><Home /></Layout>}/>
               <Route path="/login" element={<Layout><Login /></Layout>} />
               <Route path="/register" element={<Layout><Register /></Layout>} />
+              <Route path="/profile" element={<Layout><Profile /></Layout>} />
               <Route path="/entities" element={<Layout><EntityList /></Layout>} />
               <Route path="/entities/:entityId/events" element={<Layout><EventList /></Layout>} />
               <Route path="/entities/:entityId/events/:eventId" element={<Layout><EventDetails /></Layout>} />

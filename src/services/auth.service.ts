@@ -4,11 +4,21 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
+  telephone?: string;
 }
 
 export interface LoginData {
   email: string;
   password: string;
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  email?: string;
+  telephone?: string;
+  current_password?: string;
+  password?: string;
+  password_confirmation?: string;
 }
 
 export interface AuthResponse {
@@ -17,6 +27,7 @@ export interface AuthResponse {
     id: number;
     name: string;
     email: string;
+    telephone?: string;
   };
 }
 
@@ -56,5 +67,18 @@ export const AuthService = {
 
   isAuthenticated(): boolean {
     return !!this.getToken();
+  },
+  
+  async updateProfile(data: UpdateProfileData) {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      throw new Error('User not authenticated');
+    }
+    
+    const response = await axiosInstance.put(`/users/${currentUser.id}`, { user: data });
+    if (response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
+    return response.data;
   }
 }; 
