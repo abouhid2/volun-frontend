@@ -183,5 +183,21 @@ export const translations = {
     changePassword: 'Alterar Senha',
     passwordsDoNotMatch: 'As senhas não coincidem',
     saveChanges: 'Salvar Alterações'
+  },
+  pictureUpload: {
+    upload: 'Enviar Imagem',
+    imageUrl: 'URL da Imagem',
+    urlRequired: 'A URL da imagem é obrigatória',
+    uploadError: 'Erro ao enviar imagem',
+    profilePicture: 'Foto de Perfil',
+    coverPicture: 'Imagem de Capa',
+    eventPictures: 'Fotos do Evento',
+    uploadSuccess: 'Imagem enviada com sucesso',
+    deleteSuccess: 'Imagem excluída com sucesso',
+    deleteError: 'Erro ao excluir imagem',
+    noPictures: 'Nenhuma imagem disponível',
+    browse: 'Selecionar Arquivo',
+    noFileSelected: 'Nenhum arquivo selecionado',
+    invalidFileType: 'O arquivo selecionado não é uma imagem válida'
   }
 } as const; 
