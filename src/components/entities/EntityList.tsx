@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardMedia, Typography, Box, Button, IconButton, Fab, useMediaQuery, useTheme } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import { 
+  useMediaQuery, 
+  useTheme,
+  Container
+} from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { EntityType as Entity } from '../../types';
 import { API_CONFIG } from '../../config/api';
@@ -11,10 +15,11 @@ import { useAuthCheck } from '../../hooks/useAuthCheck';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { AuthRequiredAlert } from '../common/AuthRequiredAlert';
+import { MobileActionButton } from '../common/MobileActionButton';
 import { useLanguage } from '../../context/LanguageContext';
-import { AuthService } from '../../services/auth.service';
-
-const DEFAULT_LOGO = "https://placehold.co/200x200";
+import { EntityCard } from './EntityCard';
+import { EntityListHeader } from './EntityListHeader';
+import { EntityGridLayout } from './EntityGridLayout';
 
 export const EntityList = () => {
   const [entities, setEntities] = useState<Entity[]>([]);
@@ -85,6 +90,16 @@ export const EntityList = () => {
     setSelectedEntity(undefined);
   };
 
+  const renderEntity = (entity: Entity, index: number) => (
+    <EntityCard
+      entity={entity}
+      isAuthenticated={isAuthenticated}
+      onCardClick={() => handleEntityClick(entity.id)}
+      onEdit={(e) => handleEdit(e, entity)}
+      onDelete={(e) => handleDelete(e, entity.id)}
+    />
+  );
+
   if (loading) {
     return <LoadingState message={translations.organizations.loading} />;
   }
@@ -94,59 +109,17 @@ export const EntityList = () => {
   }
 
   return (
-    <>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <Typography variant="h4" component="h2">
-          {translations.organizations.title}
-        </Typography>
-        {!isMobile && (
-          <Button 
-            variant="contained" 
-            onClick={handleCreateClick}
-            startIcon={<AddIcon />}
-          >
-            {translations.common.create}
-          </Button>
-        )}
-      </Box>
+    <Container maxWidth="xl">
+      <EntityListHeader 
+        entitiesCount={entities.length} 
+        isMobile={isMobile} 
+        onCreateClick={handleCreateClick}
+      />
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2 }}>
-        {entities.map((entity) => (
-          <Card key={entity.id} sx={{ height: '100%', position: 'relative' }}>
-            <Box onClick={() => handleEntityClick(entity.id)} sx={{ cursor: 'pointer' }}>
-              <CardMedia
-                component="img"
-                height="140"
-                image={entity.logo || DEFAULT_LOGO}
-                alt={entity.name}
-                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = DEFAULT_LOGO;
-                }}
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
-                  {entity.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {entity.description}
-                </Typography>
-              </CardContent>
-            </Box>
-            {isAuthenticated && entity.user_id === AuthService.getCurrentUser()?.id && (
-              <Box sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: 1 }}>
-                <IconButton size="small" onClick={(e) => handleEdit(e, entity)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton size="small" onClick={(e) => handleDelete(e, entity.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            )}
-          </Card>
-        ))}
-      </Box>
+      <EntityGridLayout 
+        entities={entities}
+        renderEntity={renderEntity}
+      />
 
       <EntityForm
         open={isFormOpen}
@@ -161,20 +134,12 @@ export const EntityList = () => {
       />
 
       {isMobile && (
-        <Fab 
-          color="primary" 
-          aria-label={translations.common.create}
+        <MobileActionButton
+          icon={<AddIcon />}
           onClick={handleCreateClick}
-          sx={{ 
-            position: 'fixed', 
-            bottom: 16, 
-            right: 16,
-            zIndex: 1000
-          }}
-        >
-          <AddIcon />
-        </Fab>
+          ariaLabel={translations.common.create}
+        />
       )}
-    </>
+    </Container>
   );
 }; 
