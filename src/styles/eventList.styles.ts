@@ -35,6 +35,10 @@ export const eventListStyles = {
       '&:hover': {
         background: '#555'
       }
+    },
+    '@media (max-width: 600px)': {
+      minWidth: 'unset',
+      width: '100%'
     }
   },
   calendarWrapper: {
@@ -103,7 +107,11 @@ export const eventListStyles = {
     flexDirection: 'column',
     boxSizing: 'border-box',
     border: '1px solid',
-    borderColor: 'divider'
+    borderColor: 'divider',
+    '@media (max-width: 600px)': {
+      height: 'auto',
+      minHeight: '120px'
+    }
   },
   dayNumber: {
     fontSize: '1rem',
@@ -131,12 +139,21 @@ export const eventListStyles = {
     borderRadius: '4px',
     mb: 0.5,
     fontSize: '0.75rem',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
     overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    maxWidth: '100%',
+    width: '100%',
+    boxSizing: 'border-box',
     cursor: 'pointer',
+    minHeight: '1.5rem',
+    display: 'block',
     '&:hover': {
       backgroundColor: '#1557b0',
+    },
+    '@media (max-width: 600px)': {
+      p: 1,
+      height: 'auto'
     }
   },
   popoverContent: {

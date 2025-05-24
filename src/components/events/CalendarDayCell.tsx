@@ -102,13 +102,28 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             onClick={(e) => handleEventClick(e, event)}
             sx={eventListStyles.eventItem}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Typography sx={{ flex: 1 }}>{event.title}</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <DirectionsCarIcon sx={{ fontSize: 16 }} />
-                <Typography variant="caption">{event.total_cars || 0}</Typography>
-                <GroupIcon sx={{ fontSize: 16, ml: 0.5 }} />
-                <Typography variant="caption">{event.total_participants || 0}</Typography>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'flex-start', sm: 'center' }, 
+              gap: 0.5 
+            }}>
+              <Typography sx={{ flex: 1, wordBreak: 'break-word' }}>{event.title}</Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'flex-start', sm: 'center' }, 
+                gap: 0.5,
+                width: { xs: '100%', sm: 'auto' }
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <DirectionsCarIcon sx={{ fontSize: 16 }} />
+                  <Typography variant="caption" sx={{ ml: 0.5 }}>{event.total_cars || 0}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <GroupIcon sx={{ fontSize: 16 }} />
+                  <Typography variant="caption" sx={{ ml: 0.5 }}>{event.total_participants || 0}</Typography>
+                </Box>
               </Box>
             </Box>
           </Box>
