@@ -13,6 +13,11 @@ export const translations = {
     viewDetails: 'Ver Detalhes',
     confirm: 'Confirmar',
   },
+  home: {
+    title: 'Volun',
+    start: 'Começar',
+    tagline: 'Organizando seu trabalho Voluntário'
+  },
   organizations: {
     title: 'Organizações',
     createButton: 'Criar Organização',

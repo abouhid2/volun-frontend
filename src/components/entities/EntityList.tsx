@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardMedia, Typography, Container, Box, Button, IconButton } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Box, Button, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { EntityType as Entity } from '../../types';
@@ -11,7 +11,7 @@ import { useAuthCheck } from '../../hooks/useAuthCheck';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { AuthRequiredAlert } from '../common/AuthRequiredAlert';
-import { translations } from '../../translations/pt';
+import { useLanguage } from '../../context/LanguageContext';
 import { AuthService } from '../../services/auth.service';
 
 const DEFAULT_LOGO = "https://placehold.co/200x200";
@@ -23,6 +23,7 @@ export const EntityList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { translations } = useLanguage();
   const { isAuthenticated, showAuthAlert, setShowAuthAlert, checkAuth } = useAuthCheck();
 
   const fetchEntities = async () => {
@@ -91,9 +92,9 @@ export const EntityList = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography variant="h4" component="h2">
           {translations.organizations.title}
         </Typography>
         <Button variant="contained" onClick={handleCreateClick}>
@@ -150,6 +151,6 @@ export const EntityList = () => {
         open={showAuthAlert}
         onClose={() => setShowAuthAlert(false)}
       />
-    </Container>
+    </>
   );
 }; 

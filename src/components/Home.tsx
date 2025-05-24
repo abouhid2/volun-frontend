@@ -1,59 +1,40 @@
 import React from 'react';
-import { Box, Button, Typography, Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+import { Box, Typography, Container, styled } from '@mui/material';
+import { useLanguage } from '../context/LanguageContext';
+import { EntityList } from './entities/EntityList';
 
-const VLogo = styled(Box)(({ theme }) => ({
+const LogoImage = styled('img')(({ theme }) => ({
   width: '120px',
   height: '120px',
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: theme.spacing(4),
-  '&::before': {
-    content: '"V"',
-    fontSize: '80px',
-    fontWeight: 'bold',
-    color: theme.palette.primary.contrastText,
-  }
+  marginBottom: theme.spacing(2),
 }));
 
 const Home = () => {
-  const navigate = useNavigate();
+  const { translations } = useLanguage();
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="lg">
       <Box
         sx={{
-          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          gap: 3
+          pt: 6,
+          pb: 4
         }}
       >
-        <VLogo />
+        <LogoImage src="/volun-logo.png" alt={translations.home.title} />
         <Typography variant="h3" component="h1" gutterBottom>
-          Volun
+          {translations.home.title}
         </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => navigate('/entities')}
-          sx={{
-            px: 4,
-            py: 1.5,
-            fontSize: '1.2rem',
-            borderRadius: '30px'
-          }}
-        >
-          Começar
-        </Button>
+        <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+          {translations.home.tagline}
+        </Typography>
       </Box>
+
+      <EntityList />
     </Container>
   );
 };

@@ -27,7 +27,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             variant="h6"
             component="div"
             sx={{ flexGrow: 1, cursor: "pointer" }}
-            onClick={() => navigate("/entities")}
+            onClick={() => navigate("/")}
           >
             Volun
           </Typography>
@@ -42,7 +42,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Stack>
           ) : (
             <>
-              <Button color="inherit" onClick={() => navigate("/entities")}>
+              <Button color="inherit" onClick={() => navigate("/")}>
                 {translations.auth.home}
               </Button>
               <Button color="inherit" onClick={() => navigate("/login")}>

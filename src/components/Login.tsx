@@ -27,7 +27,7 @@ export const Login = () => {
     
     try {
       await AuthService.login(formData);
-      navigate('/entities');
+      navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.error || translations.auth.loginError);
     }

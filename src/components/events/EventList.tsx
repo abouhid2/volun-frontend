@@ -221,7 +221,7 @@ export const EventList = () => {
       }
     }}>
       <div style={eventListStyles.header}>
-        <IconButton onClick={() => navigate('/entities')} sx={{ mr: 2 }}>
+        <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" component="h1">

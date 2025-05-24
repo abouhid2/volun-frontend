@@ -28,7 +28,7 @@ export const Register = () => {
     
     try {
       await AuthService.register(formData);
-      navigate('/entities');
+      navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.errors?.[0] || translations.auth.registerError);
     }

@@ -26,8 +26,16 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      // Only clear if the frontend *thought* the user was logged in
+      if (AuthService.isAuthenticated()) {
+        console.warn('Token invalid — logging out');
+        AuthService.logout();
+      }
+    }
     return Promise.reject(error);
   }
 );
+
 
 export default axiosInstance; 
