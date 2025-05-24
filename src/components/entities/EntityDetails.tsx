@@ -72,7 +72,7 @@ export const EntityDetails: React.FC = () => {
         <Typography color="error">{error}</Typography>
         <Button 
           variant="outlined" 
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/')}
           sx={{ mt: 2 }}
         >
           {translations.common.tryAgain}
@@ -84,20 +84,12 @@ export const EntityDetails: React.FC = () => {
   return (
     <Container sx={{ py: 4, width: '100%', maxWidth: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+        <IconButton onClick={() => navigate('/')} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" component="h1">
           {entity.name}
         </Typography>
-        <Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={() => setIsDuplicateDialogOpen(true)}
-          >
-            {translations.entities.duplicateTitle}
-          </Button>
-        </Box>
       </Box>
 
       <Box 

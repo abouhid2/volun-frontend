@@ -88,7 +88,7 @@ export const getDonations = (eventId: number) =>
 export const createDonation = (eventId: number, donation: Omit<Donation, 'id'>) => 
   axiosInstance.post<Donation>(`${API_CONFIG.baseURL}/events/${eventId}/donations`, donation).then(res => res.data);
 
-export const updateDonation = (eventId: number, donationId: number, donation: Partial<Omit<Donation, 'id' | 'event_id'>>) => 
+export const updateDonation = (eventId: number, donationId: number, donation: Partial<Donation>) => 
   axiosInstance.patch<Donation>(`${API_CONFIG.baseURL}/events/${eventId}/donations/${donationId}`, donation).then(res => res.data);
 
 export const deleteDonation = (eventId: number, donationId: number) => 
