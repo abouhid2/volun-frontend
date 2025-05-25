@@ -537,18 +537,14 @@ export const EventDetails: React.FC = () => {
             <Tabs
               value={activeTab}
               onChange={(_, newValue) => setActiveTab(newValue)}
-              variant={isMobile ? "fullWidth" : "standard"}
+              variant="fullWidth"
               sx={{
                 borderBottom: 1,
                 borderColor: 'divider',
-                backgroundColor: alpha(theme.palette.primary.main, 0.03),
                 '& .MuiTab-root': { 
-                  fontWeight: 500,
-                  fontSize: '0.9rem',
+                  fontSize: '0.95rem',
+                  minHeight: 48,
                   textTransform: 'none',
-                  minWidth: 0,
-                  px: 3,
-                  py: 1.5,
                 }
               }}
             >
@@ -560,95 +556,127 @@ export const EventDetails: React.FC = () => {
             <Box sx={{ p: 3, position: 'relative' }}>
               {activeTab === 0 && (
                 <>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="outlined"
-                        startIcon={<CasinoIcon />}
-                        onClick={() => handleRandomizeAssignment(true)}
-                        size="small"
-                        color="primary"
-                      >
-                        {translations.cars.randomizeFull}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={handleRemoveAllBackSeats}
-                        size="small"
-                        color="error"
-                      >
-                        {translations.cars.removeBackSeats}
-                      </Button>
-                    </Stack>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, my: 2 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<CasinoIcon />}
+                      onClick={() => handleRandomizeAssignment(true)}
+                      size="small"
+                      sx={{ flex: { xs: '1 0 auto', sm: '0 1 auto' } }}
+                    >
+                      {translations.cars.randomizeFull}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={handleRemoveAllBackSeats}
+                      size="small"
+                      sx={{ flex: { xs: '1 0 auto', sm: '0 1 auto' } }}
+                    >
+                      {translations.cars.removeBackSeats}
+                    </Button>
+                  </Box>
+                  
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    mb: 2, 
+                    mt: 1 
+                  }}>
+                    <Typography variant="subtitle1">
+                      {translations.events.participants}
+                    </Typography>
                     <Tooltip title={translations.events.addParticipant}>
                       <IconButton
                         color="primary"
-                        size="small"
                         onClick={() => {
                           setSelectedParticipant(null);
                           setIsParticipantDialogOpen(true);
                         }}
-                        sx={{
-                          bgcolor: alpha(theme.palette.primary.main, 0.1),
-                          '&:hover': {
-                            bgcolor: alpha(theme.palette.primary.main, 0.2),
-                          }
-                        }}
+                        size="small"
                       >
-                        <PersonAddIcon fontSize="small" />
+                        <PersonAddIcon />
                       </IconButton>
                     </Tooltip>
                   </Box>
                   
-                  <List sx={{ mt: 0, pt: 0 }}>
-                    {participants.length === 0 ? (
-                      <ListItem>
-                        <ListItemText primary={translations.events.noParticipants} />
-                      </ListItem>
-                    ) : (
-                      participants.sort((a, b) => a.id - b.id).map((participant, index) => {
-                        const car = cars.find(car => car.id === participant.car_id);
-                        return (
-                          <ListItem 
-                            key={participant.id} 
-                            secondaryAction={
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                {participant.status && (
-                                  <Chip 
-                                    size="small" 
-                                    label={translations.events.status[participant.status as keyof typeof translations.events.status] || participant.status}
-                                    color={participant.status === 'going' ? 'success' : 
-                                          participant.status === 'not_going' ? 'error' : 
-                                          participant.status === 'maybe' ? 'warning' : 'default'}
-                                  />
-                                )}
-                                <IconButton size="small" onClick={() => handleEditParticipant(participant)}>
-                                  <EditIcon />
-                                </IconButton>
-                                <IconButton size="small" color="error" onClick={() => handleDeleteParticipant(participant)}>
-                                  <DeleteIcon />
-                                </IconButton>
-                              </Box>
-                            }
-                          >
-                            <ListItemText
-                              primary={
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Typography component="span" sx={{ minWidth: '24px' }}>
-                                    {index + 1}.
+                  {participants.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
+                      <Typography>{translations.events.noParticipants}</Typography>
+                    </Box>
+                  ) : (
+                    <Box>
+                      {participants
+                        .sort((a, b) => a.id - b.id)
+                        .map((participant, index) => {
+                          const car = cars.find(car => car.id === participant.car_id);
+                          return (
+                            <Box 
+                              key={participant.id}
+                              sx={{ 
+                                py: 1.5, 
+                                px: 1.5, 
+                                mb: 1,
+                                borderRadius: 1,
+                                bgcolor: 'background.paper',
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                              }}
+                            >
+                              <Box sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                mb: 0.5
+                              }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <Typography 
+                                    variant="body1" 
+                                    sx={{ mr: 1, fontWeight: 500 }}
+                                  >
+                                    {index + 1}. {participant.name}
                                   </Typography>
-                                  <Typography component="span">
-                                    {participant.name || `ID: ${participant.id}`}
-                                  </Typography>
+                                  {participant.status && (
+                                    <Chip 
+                                      size="small" 
+                                      label={translations.events.status[participant.status as keyof typeof translations.events.status] || participant.status}
+                                      color={participant.status === 'going' ? 'success' : 
+                                            participant.status === 'not_going' ? 'error' : 
+                                            participant.status === 'maybe' ? 'warning' : 'default'}
+                                    />
+                                  )}
                                 </Box>
-                              }
-                              secondary={car ? `${translations.cars.car}: ${car.driver_name}` : undefined}
-                            />
-                          </ListItem>
-                        );
-                      })
-                    )}
-                  </List>
+                                <Box>
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => handleEditParticipant(participant)}
+                                  >
+                                    <EditIcon fontSize="small" />
+                                  </IconButton>
+                                  <IconButton 
+                                    size="small" 
+                                    color="error" 
+                                    onClick={() => handleDeleteParticipant(participant)}
+                                  >
+                                    <DeleteIcon fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                              </Box>
+                              {car && (
+                                <Typography 
+                                  variant="body2" 
+                                  color="text.secondary"
+                                >
+                                  {translations.cars.car}: {car.driver_name}
+                                </Typography>
+                              )}
+                            </Box>
+                          );
+                        })}
+                    </Box>
+                  )}
                 </>
               )}
               {activeTab === 1 && (
