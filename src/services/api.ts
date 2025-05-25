@@ -1,5 +1,5 @@
 import axiosInstance from './axios.config';
-import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings, Comment, Inventory, InventoryTransaction, InventoryFormValues, UseStockFormValues } from '../types';
+import { Event, Participant, ParticipationRequest, Entity, Car, Donation, DonationSettings, Comment, Inventory, InventoryTransaction, InventoryFormValues, UseStockFormValues, Request, RequestFormValues } from '../types';
 import { API_CONFIG } from '../config/api';
 
 // Entity CRUD operations
@@ -160,3 +160,26 @@ export const getInventoryTransactions = (entityId: number, inventoryId: number) 
       include: ['user', 'event', 'donation']
     }
   }).then(res => res.data);
+
+// Request operations
+export const getRequests = (entityId: number) => 
+  axiosInstance.get<Request[]>(`${API_CONFIG.baseURL}/entities/${entityId}/requests`, {
+    params: {
+      include: 'user'
+    }
+  }).then(res => res.data);
+
+export const createRequest = (entityId: number, request: RequestFormValues) => 
+  axiosInstance.post<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests`, request).then(res => res.data);
+
+export const updateRequest = (entityId: number, requestId: number, request: Partial<Request>) => 
+  axiosInstance.patch<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}`, request).then(res => res.data);
+
+export const deleteRequest = (entityId: number, requestId: number) => 
+  axiosInstance.delete(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}`).then(res => res.data);
+
+export const approveRequest = (entityId: number, requestId: number) => 
+  axiosInstance.post<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}/approve`).then(res => res.data);
+
+export const rejectRequest = (entityId: number, requestId: number) => 
+  axiosInstance.post<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}/reject`).then(res => res.data);

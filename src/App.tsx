@@ -15,6 +15,7 @@ import { Profile } from './components/Profile';
 import { EntityDetails } from './components/entities/EntityDetails';
 import { InventoryList } from './components/inventory/InventoryList';
 import { InventoryDetails } from './components/inventory/InventoryDetails';
+import { RequestsList } from './components/requests/RequestsList';
 
 const theme = createTheme({
   palette: {
@@ -41,6 +42,7 @@ const App = () => {
               <Route path="/entities/:entityId/events/:eventId" element={<Layout><EventDetails /></Layout>} />
               <Route path="/entities/:entityId/inventory" element={<Layout><InventoryList /></Layout>} />
               <Route path="/entities/:entityId/inventory/:inventoryId" element={<Layout><InventoryDetails /></Layout>} />
+              <Route path="/entities/:entityId/requests" element={<Layout><RequestsList /></Layout>} />
             </Routes>
           </Router>
         </LocalizationProvider>

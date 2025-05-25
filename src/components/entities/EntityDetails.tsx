@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Box, Button, IconButton, Card, CardContent } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Inventory as InventoryIcon, Event as EventIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Inventory as InventoryIcon, Event as EventIcon, Receipt as RequestIcon } from '@mui/icons-material';
 import { EntityDuplicateDialog } from './EntityDuplicateDialog';
 import { duplicateEntity, getEntity } from '../../services/api';
 import { translations } from '../../translations/pt';
@@ -137,7 +137,7 @@ export const EntityDetails: React.FC = () => {
       <Box 
         sx={{ 
           display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, 
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, 
           gap: 3
         }}
       >
@@ -152,7 +152,7 @@ export const EntityDetails: React.FC = () => {
           <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', p: 4 }}>
             <EventIcon sx={{ fontSize: 60, mb: 2, color: 'primary.main' }} />
             <Typography variant="h5" align="center">
-              {translations.events.title} {entity.name}
+              {translations.events.title}
             </Typography>
           </CardContent>
         </Card>
@@ -167,7 +167,22 @@ export const EntityDetails: React.FC = () => {
           <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', p: 4 }}>
             <InventoryIcon sx={{ fontSize: 60, mb: 2, color: 'primary.main' }} />
             <Typography variant="h5" align="center">
-              {translations.inventory.title} - {entity.name}
+              {translations.inventory.title}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card 
+          sx={{ 
+            cursor: 'pointer', 
+            transition: 'transform 0.2s', 
+            '&:hover': { transform: 'scale(1.02)' } 
+          }}
+          onClick={() => navigate(`/entities/${entity.id}/requests`)}
+        >
+          <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', p: 4 }}>
+            <RequestIcon sx={{ fontSize: 60, mb: 2, color: 'primary.main' }} />
+            <Typography variant="h5" align="center">
+              {translations.requests.title}
             </Typography>
           </CardContent>
         </Card>

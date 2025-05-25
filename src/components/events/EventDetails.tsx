@@ -41,12 +41,13 @@ import {
   Add as AddIcon,
   PersonAdd as PersonAddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  Receipt as RequestIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Event, Car, Participant, Donation, Comment, Inventory } from '../../types';
-import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings, duplicateEvent, getComments, createComment, updateComment, deleteComment, getInventories } from '../../services/api';
+import { Event, Car, Participant, Donation, Comment, Inventory, Request, RequestFormValues } from '../../types';
+import { getEvent, getCars, createCar, updateCar, deleteCar, getDonations, createDonation, updateDonation, deleteDonation, getParticipants, participate, updateParticipant, deleteParticipant, cleanCarSeats, getDonationSettings, updateDonationSettings, duplicateEvent, getComments, createComment, updateComment, deleteComment, getInventories, getRequests, createRequest, updateRequest, deleteRequest, approveRequest, rejectRequest } from '../../services/api';
 import { LoadingState } from '../common/LoadingState';
 import { ErrorState } from '../common/ErrorState';
 import { translations } from '../../translations/pt';
@@ -61,6 +62,7 @@ import { ParticipantDialog } from './participants/ParticipantDialog';
 import { EventSummary } from './EventSummary';
 import { EventDuplicateDialog } from './EventDuplicateDialog';
 import { CommentsBox } from './comments/CommentsBox';
+import { RequestsBox } from '../requests/RequestsBox';
 import { useAuth } from '../../hooks/useAuth';
 import { CarList } from './cars/CarList';
 
@@ -86,6 +88,7 @@ export const EventDetails: React.FC = () => {
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [inventories, setInventories] = useState<Inventory[]>([]);
+  const [requests, setRequests] = useState<Request[]>([]);
   const { user } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -112,6 +115,14 @@ export const EventDetails: React.FC = () => {
       setDonationUnits(donationSettingsData?.units || []);
       setComments(commentsData);
       setError(null);
+      
+      // Fetch requests using the entity ID from params
+      try {
+        const requestsData = await getRequests(parseInt(entityId));
+        setRequests(requestsData);
+      } catch (err) {
+        console.error('Error fetching requests:', err);
+      }
       
       // Fetch inventory items
       if (entityId) {
@@ -397,6 +408,62 @@ export const EventDetails: React.FC = () => {
     }
   };
 
+  const handleAddRequest = async (requestData: RequestFormValues) => {
+    if (!entityId) return;
+    try {
+      const newRequest = await createRequest(parseInt(entityId), requestData);
+      setRequests([newRequest, ...requests]);
+    } catch (err) {
+      console.error('Error adding request:', err);
+    }
+  };
+
+  const handleUpdateRequest = async (requestId: number, requestData: RequestFormValues) => {
+    if (!entityId) return;
+    try {
+      const updatedRequest = await updateRequest(parseInt(entityId), requestId, requestData);
+      setRequests(requests.map(request => 
+        request.id === requestId ? updatedRequest : request
+      ));
+    } catch (err) {
+      console.error('Error updating request:', err);
+    }
+  };
+
+  const handleDeleteRequest = async (requestId: number) => {
+    if (!entityId) return;
+    try {
+      await deleteRequest(parseInt(entityId), requestId);
+      setRequests(requests.filter(request => request.id !== requestId));
+    } catch (err) {
+      console.error('Error deleting request:', err);
+    }
+  };
+
+  const handleApproveRequest = async (requestId: number) => {
+    if (!entityId) return;
+    try {
+      const approvedRequest = await approveRequest(parseInt(entityId), requestId);
+      setRequests(requests.map(request => 
+        request.id === requestId ? approvedRequest : request
+      ));
+    } catch (err) {
+      console.error('Error approving request:', err);
+    }
+  };
+
+  const handleRejectRequest = async (requestId: number) => {
+    if (!entityId) return;
+    try {
+      const rejectedRequest = await rejectRequest(parseInt(entityId), requestId);
+      setRequests(requests.map(request => 
+        request.id === requestId ? rejectedRequest : request
+      ));
+    } catch (err) {
+      console.error('Error rejecting request:', err);
+    }
+  };
+
   if (loading) return <LoadingState message={translations.events.loading} />;
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
   if (!event) return null;
@@ -551,6 +618,7 @@ export const EventDetails: React.FC = () => {
               <Tab label={translations.events.participants} />
               <Tab label={translations.donations.title} />
               <Tab label={translations.events.comments.title} />
+              <Tab label={translations.requests.title} />
             </Tabs>
             
             <Box sx={{ p: 3, position: 'relative' }}>
@@ -759,6 +827,17 @@ export const EventDetails: React.FC = () => {
                   onAddComment={handleAddComment}
                   onUpdateComment={handleUpdateComment}
                   onDeleteComment={handleDeleteComment}
+                />
+              )}
+              {activeTab === 3 && (
+                <RequestsBox
+                  entityId={parseInt(entityId!)}
+                  requests={requests}
+                  onAddRequest={handleAddRequest}
+                  onUpdateRequest={handleUpdateRequest}
+                  onDeleteRequest={handleDeleteRequest}
+                  onApproveRequest={handleApproveRequest}
+                  onRejectRequest={handleRejectRequest}
                 />
               )}
             </Box>
