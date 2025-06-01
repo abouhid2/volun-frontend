@@ -12,7 +12,9 @@ import {
   TextField,
   alpha,
   useTheme,
-  Checkbox
+  Checkbox,
+  FormControlLabel,
+  Switch
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -50,6 +52,7 @@ export const RequestsBox: React.FC<RequestsBoxProps> = ({
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showOnlyPending, setShowOnlyPending] = useState(true);
   const { user } = useAuth();
   const theme = useTheme();
 
@@ -75,27 +78,42 @@ export const RequestsBox: React.FC<RequestsBoxProps> = ({
   };
 
   const handleFulfillToggle = (requestId: number, fulfilled: boolean) => {
-    if (!fulfilled) {
-      onApproveRequest(requestId);
-    }
+    onApproveRequest(requestId);
   };
 
-  const filteredRequests = requests.filter(request =>
-    request.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.item_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (request.notes && request.notes.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredRequests = requests.filter(request => {
+    const matchesSearch = 
+      (request.item_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (request.item_type?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      ((request.notes?.toLowerCase() || '').includes(searchTerm.toLowerCase()));
+    
+    const matchesStatus = !showOnlyPending || !request.fulfilled;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <TextField
-          placeholder={`${translations.common.search}...`}
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ width: '250px' }}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TextField
+            placeholder={`${translations.common.search}...`}
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ width: '250px' }}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={showOnlyPending}
+                onChange={(e) => setShowOnlyPending(e.target.checked)}
+              />
+            }
+            label={<Typography variant="body2">{translations.requests.status.pending}</Typography>}
+          />
+        </Box>
         <Tooltip title={translations.requests.addButton}>
           <IconButton
             color="primary"
@@ -177,7 +195,7 @@ export const RequestsBox: React.FC<RequestsBoxProps> = ({
                 </Typography>
               )}
               <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
-                {translations.requests.requestedBy}: {request.requested_by || translations.common.anonymous} • {translations.requests.requestedOn}: {format(new Date(request.requested_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                {translations.requests.requestedBy}: {request.requested_by || translations.common.anonymous} • {translations.requests.requestedOn}: {request.requested_at ? format(new Date(request.requested_at), 'dd/MM/yyyy HH:mm', { locale: ptBR }) : '-'}
               </Typography>
             </ListItem>
           ))}

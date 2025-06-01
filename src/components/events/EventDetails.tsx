@@ -443,9 +443,10 @@ export const EventDetails: React.FC = () => {
   const handleApproveRequest = async (requestId: number) => {
     if (!entityId) return;
     try {
-      const approvedRequest = await approveRequest(parseInt(entityId), requestId);
+      const response = await approveRequest(parseInt(entityId), requestId) as any;
+      const updatedRequest = response.request || response;
       setRequests(requests.map(request => 
-        request.id === requestId ? approvedRequest : request
+        request.id === requestId ? updatedRequest : request
       ));
     } catch (err) {
       console.error('Error approving request:', err);
