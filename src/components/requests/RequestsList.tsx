@@ -31,7 +31,8 @@ import {
   Tabs,
   Tab,
   useTheme,
-  alpha
+  alpha,
+  Checkbox
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -73,8 +74,6 @@ export const RequestsList: React.FC = () => {
     
     try {
       setLoading(true);
-      // Note: This is just a placeholder. You'll need to create an API endpoint to get all requests for an entity
-      // For now, we'll assume the API returns all requests
       const data = await getRequests(parseInt(entityId));
       setRequests(data);
       setError(null);
@@ -89,7 +88,6 @@ export const RequestsList: React.FC = () => {
   const handleAddRequest = async (requestData: RequestFormValues) => {
     if (!entityId) return;
     try {
-      // Note: This is just a placeholder. You'll need to create an API endpoint to create requests for an entity
       const newRequest = await createRequest(parseInt(entityId), requestData);
       setRequests([newRequest, ...requests]);
       setIsRequestFormOpen(false);
@@ -101,7 +99,6 @@ export const RequestsList: React.FC = () => {
   const handleUpdateRequest = async (requestId: number, requestData: RequestFormValues) => {
     if (!entityId) return;
     try {
-      // Note: This is just a placeholder. You'll need to create an API endpoint to update requests
       const updatedRequest = await updateRequest(parseInt(entityId), requestId, requestData);
       setRequests(requests.map(request => 
         request.id === requestId ? updatedRequest : request
@@ -118,7 +115,6 @@ export const RequestsList: React.FC = () => {
     
     if (window.confirm(translations.common.confirmDelete)) {
       try {
-        // Note: This is just a placeholder. You'll need to create an API endpoint to delete requests
         await deleteRequest(parseInt(entityId), requestId);
         setRequests(requests.filter(request => request.id !== requestId));
       } catch (err) {
@@ -130,51 +126,32 @@ export const RequestsList: React.FC = () => {
   const handleApproveRequest = async (requestId: number) => {
     if (!entityId) return;
     try {
-      // Note: This is just a placeholder. You'll need to create an API endpoint to approve requests
-      const approvedRequest = await approveRequest(parseInt(entityId), requestId);
+      const response = await approveRequest(parseInt(entityId), requestId) as any;
+      const updatedRequest = response.request || response;
       setRequests(requests.map(request => 
-        request.id === requestId ? approvedRequest : request
+        request.id === requestId ? updatedRequest : request
       ));
     } catch (err) {
       console.error('Error approving request:', err);
     }
   };
   
-  const handleRejectRequest = async (requestId: number) => {
-    if (!entityId) return;
-    try {
-      // Note: This is just a placeholder. You'll need to create an API endpoint to reject requests
-      const rejectedRequest = await rejectRequest(parseInt(entityId), requestId);
-      setRequests(requests.map(request => 
-        request.id === requestId ? rejectedRequest : request
-      ));
-    } catch (err) {
-      console.error('Error rejecting request:', err);
-    }
-  };
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'warning';
-      case 'approved':
-        return 'success';
-      case 'rejected':
-        return 'error';
-      default:
-        return 'default';
-    }
+  const handleFulfillToggle = (requestId: number, fulfilled: boolean) => {
+    handleApproveRequest(requestId);
   };
   
   const filteredRequests = requests.filter(request => {
+    if (!request) return false;
+
     const matchesSearch = 
-      request.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.item_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (request.notes && request.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+      (request.item_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (request.item_type?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      ((request.notes?.toLowerCase() || '').includes(searchTerm.toLowerCase()));
     
     const matchesStatus = 
       filterStatus === 'all' || 
-      request.status === filterStatus;
+      (filterStatus === 'approved' && request.fulfilled === true) ||
+      (filterStatus === 'pending' && request.fulfilled === false);
     
     return matchesSearch && matchesStatus;
   });
@@ -225,7 +202,6 @@ export const RequestsList: React.FC = () => {
               <MenuItem value="all">{translations.common.all}</MenuItem>
               <MenuItem value="pending">{translations.requests.status.pending}</MenuItem>
               <MenuItem value="approved">{translations.requests.status.approved}</MenuItem>
-              <MenuItem value="rejected">{translations.requests.status.rejected}</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -251,10 +227,10 @@ export const RequestsList: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>{translations.requests.fulfilled}</TableCell>
                 <TableCell>{translations.requests.itemName}</TableCell>
                 <TableCell>{translations.requests.itemType}</TableCell>
                 <TableCell>{translations.requests.quantity}</TableCell>
-                <TableCell>{translations.requests.status.title}</TableCell>
                 <TableCell>{translations.requests.requestedBy}</TableCell>
                 <TableCell>{translations.requests.requestedOn}</TableCell>
                 <TableCell align="right">{translations.common.actions}</TableCell>
@@ -263,46 +239,28 @@ export const RequestsList: React.FC = () => {
             <TableBody>
               {filteredRequests.map((request) => (
                 <TableRow key={request.id}>
+                  <TableCell>
+                    <Tooltip title={request.fulfilled ? translations.requests.status.approved : translations.requests.status.pending}>
+                      <Checkbox
+                        checked={request.fulfilled}
+                        onChange={() => handleFulfillToggle(request.id, request.fulfilled)}
+                        color="success"
+                      />
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>{request.item_name}</TableCell>
                   <TableCell>{request.item_type}</TableCell>
                   <TableCell>
                     {request.quantity} {translations.donations.units[request.unit as keyof typeof translations.donations.units]}
                   </TableCell>
+                  <TableCell>{request.requested_by || translations.common.anonymous}</TableCell>
                   <TableCell>
-                    <Chip
-                      size="small"
-                      label={translations.requests.status[request.status as keyof typeof translations.requests.status]}
-                      color={getStatusColor(request.status)}
-                    />
-                  </TableCell>
-                  <TableCell>{request.user?.name || translations.common.anonymous}</TableCell>
-                  <TableCell>
-                    {format(new Date(request.requested_at), 'dd/MM/yyyy', { locale: ptBR })}
+                    {request.requested_at ? 
+                      format(new Date(request.requested_at), 'dd/MM/yyyy', { locale: ptBR }) : 
+                      '-'}
                   </TableCell>
                   <TableCell align="right">
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      {request.status === 'pending' && (
-                        <>
-                          <Tooltip title={translations.requests.approve}>
-                            <IconButton
-                              size="small"
-                              color="success"
-                              onClick={() => handleApproveRequest(request.id)}
-                            >
-                              <ApproveIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title={translations.requests.reject}>
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleRejectRequest(request.id)}
-                            >
-                              <RejectIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </>
-                      )}
                       <Tooltip title={translations.common.edit}>
                         <IconButton
                           size="small"

@@ -34,11 +34,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [formValues, setFormValues] = useState<RequestFormValues>({
     item_name: '',
     item_type: '',
-    quantity: 1,
+    quantity: '1',
     unit: 'units',
     requested_by: '',
     notes: '',
-    status: 'pending',
     requested_at: format(new Date(), 'yyyy-MM-dd')
   });
 
@@ -51,18 +50,16 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         unit: selectedRequest.unit,
         requested_by: selectedRequest.requested_by || '',
         notes: selectedRequest.notes || '',
-        status: selectedRequest.status,
         requested_at: selectedRequest.requested_at ? format(new Date(selectedRequest.requested_at), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')
       });
     } else {
       setFormValues({
         item_name: '',
         item_type: '',
-        quantity: 1,
+        quantity: '1',
         unit: 'units',
         requested_by: '',
         notes: '',
-        status: 'pending',
         requested_at: format(new Date(), 'yyyy-MM-dd')
       });
     }
@@ -144,20 +141,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               onChange={handleChange}
               fullWidth
             />
-
-            <FormControl fullWidth required>
-              <InputLabel>{translations.requests.status.title}</InputLabel>
-              <Select
-                name="status"
-                value={formValues.status || 'pending'}
-                onChange={handleChange}
-                label={translations.requests.status.title}
-              >
-                <MenuItem value="pending">{translations.requests.status.pending}</MenuItem>
-                <MenuItem value="approved">{translations.requests.status.approved}</MenuItem>
-                <MenuItem value="rejected">{translations.requests.status.rejected}</MenuItem>
-              </Select>
-            </FormControl>
 
             <TextField
               label={translations.requests.requestedOn}

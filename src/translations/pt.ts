@@ -242,9 +242,10 @@ export const translations = {
     status: {
       title: 'Status',
       pending: 'Pendente',
-      approved: 'Aprovado',
+      approved: 'Atendido',
       rejected: 'Rejeitado'
     },
+    fulfilled: 'Atendido',
     requestedBy: 'Solicitado por',
     requestedOn: 'Solicitado em',
     approve: 'Aprovar',

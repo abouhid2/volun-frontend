@@ -28,8 +28,7 @@ import {
   ArrowBack as ArrowBackIcon,
   Add as AddIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon,
-  Visibility as VisibilityIcon
+  Edit as EditIcon
 } from '@mui/icons-material';
 import { translations } from '../../translations/pt';
 import { getEntity, getInventories, createInventory, deleteInventory } from '../../services/api';
@@ -243,19 +242,12 @@ export const InventoryList: React.FC = () => {
               {inventories.map((inventory) => (
                 <TableRow key={inventory.id}>
                   <TableCell>{inventory.item_name}</TableCell>
-                  <TableCell>{inventory.item_type}</TableCell>
+                  <TableCell>{translations.donations.types[inventory.item_type as keyof typeof translations.donations.types] || inventory.item_type}</TableCell>
                   <TableCell align="right">{inventory.quantity}</TableCell>
-                  <TableCell>{inventory.unit}</TableCell>
+                  <TableCell>{translations.donations.units[inventory.unit as keyof typeof translations.donations.units] || inventory.unit}</TableCell>
                   <TableCell>{inventory.notes || '-'}</TableCell>
                   <TableCell align="center">
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                      <IconButton 
-                        size="small" 
-                        color="primary"
-                        onClick={() => navigate(`/entities/${entityId}/inventory/${inventory.id}`)}
-                      >
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
                       <IconButton 
                         size="small" 
                         color="secondary"

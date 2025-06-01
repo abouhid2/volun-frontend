@@ -3,29 +3,24 @@ export interface Request {
   entity_id: number;
   item_name: string;
   item_type: string;
-  quantity: number;
+  quantity: string;
   unit: string;
-  status: 'pending' | 'approved' | 'rejected';
   fulfilled: boolean;
-  fulfilled_at?: string;
-  requested_by?: string;
-  notes?: string;
-  requested_at: string;
+  fulfilled_at: string | null;
+  requested_by: string;
+  notes: string;
+  created_at: string;
   updated_at: string;
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
+  requested_at: string;
+  deleted_at: string | null;
 }
 
 export interface RequestFormValues {
   item_name: string;
   item_type: string;
-  quantity: number;
+  quantity: string;
   unit: string;
   requested_by?: string;
   notes?: string;
-  status?: 'pending' | 'approved' | 'rejected';
   requested_at?: string;
 } 

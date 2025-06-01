@@ -11,7 +11,8 @@ import {
   Tooltip,
   TextField,
   alpha,
-  useTheme
+  useTheme,
+  Checkbox
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -73,16 +74,9 @@ export const RequestsBox: React.FC<RequestsBoxProps> = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'warning';
-      case 'approved':
-        return 'success';
-      case 'rejected':
-        return 'error';
-      default:
-        return 'default';
+  const handleFulfillToggle = (requestId: number, fulfilled: boolean) => {
+    if (!fulfilled) {
+      onApproveRequest(requestId);
     }
   };
 
@@ -143,38 +137,18 @@ export const RequestsBox: React.FC<RequestsBoxProps> = ({
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Tooltip title={translations.requests.fulfilled}>
+                    <Checkbox
+                      checked={request.fulfilled}
+                      onChange={() => handleFulfillToggle(request.id, request.fulfilled)}
+                      color="success"
+                    />
+                  </Tooltip>
                   <Typography variant="body1" fontWeight={500}>
                     {request.item_name} 
                   </Typography>
-                  <Chip
-                    size="small"
-                    label={translations.requests.status[request.status as keyof typeof translations.requests.status]}
-                    color={getStatusColor(request.status)}
-                  />
                 </Box>
                 <Box>
-                  {request.status === 'pending' && (
-                    <>
-                      <Tooltip title={translations.requests.approve}>
-                        <IconButton
-                          size="small"
-                          color="success"
-                          onClick={() => onApproveRequest(request.id)}
-                        >
-                          <ApproveIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={translations.requests.reject}>
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => onRejectRequest(request.id)}
-                        >
-                          <RejectIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </>
-                  )}
                   <Tooltip title={translations.common.edit}>
                     <IconButton
                       size="small"
@@ -203,7 +177,7 @@ export const RequestsBox: React.FC<RequestsBoxProps> = ({
                 </Typography>
               )}
               <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>
-                {translations.requests.requestedBy}: {request.user?.name || translations.common.anonymous} • {translations.requests.requestedOn}: {format(new Date(request.requested_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                {translations.requests.requestedBy}: {request.requested_by || translations.common.anonymous} • {translations.requests.requestedOn}: {format(new Date(request.requested_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
               </Typography>
             </ListItem>
           ))}

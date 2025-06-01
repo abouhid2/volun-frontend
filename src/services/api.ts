@@ -179,7 +179,7 @@ export const deleteRequest = (entityId: number, requestId: number) =>
   axiosInstance.delete(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}`).then(res => res.data);
 
 export const approveRequest = (entityId: number, requestId: number) => 
-  axiosInstance.post<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}/approve`).then(res => res.data);
+  axiosInstance.post<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}/fulfill`).then(res => res.data);
 
 export const rejectRequest = (entityId: number, requestId: number) => 
   axiosInstance.post<Request>(`${API_CONFIG.baseURL}/entities/${entityId}/requests/${requestId}/reject`).then(res => res.data);
